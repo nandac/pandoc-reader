@@ -5,6 +5,9 @@ from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
 
+STATIC_LINK_ENCODED = "%7Bstatic%7D"
+STATIC_LINK_UNENCODED = "{static}"
+
 
 class PandocReader(BaseReader):
     """Process files written in Pandoc Markdown."""
@@ -13,7 +16,7 @@ class PandocReader(BaseReader):
     file_extensions = ['md', 'markdown', 'mkd', 'mdown']
 
     def read(self, source_path):
-        """Parse Pandoc Markdown and return HTNL 5 output and metadata."""
+        """Parse Pandoc Markdown and return HTML 5 output and metadata."""
         content = ""
 
         with pelican_open(source_path) as file_content:
@@ -38,24 +41,38 @@ class PandocReader(BaseReader):
             proc = subprocess.Popen(
                 pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
             )
-            output = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
+
+            html = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
             status = proc.wait()
             if status:
                 raise subprocess.CalledProcessError(status, pandoc_cmd)
 
-        return output, metadata
+            # Replace all occurrences of %7Bfilename%7D to {filename}
+            # so that static links are resolved by pelican
+            html = html.replace(STATIC_LINK_ENCODED, STATIC_LINK_UNENCODED)
+
+        return html, metadata
 
     def _process_metadata(self, text):
         """Process YAML metadata and export."""
         metadata = {}
 
+        # Check that the first line of the file
+        # starts with a YAML header
+        if text[0].strip() not in ["---", "..."]:
+            raise Exception("Could not find metadata header '---' or '...'")
+
         # Find the end of the YAML block
         lines = text[1:]
         yaml_end = ""
         for line_num, line in enumerate(lines):
-            if line in ["---", "..."]:
+            if line.strip() in ["---", "..."]:
                 yaml_end = line_num
                 break
+
+        # Check if the end of the YAML block was found
+        if not yaml_end:
+            raise Exception("Could not find end of metadata block.")
 
         # Process the YAML block
         for line in lines[:yaml_end]:
