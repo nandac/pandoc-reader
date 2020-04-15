@@ -5,8 +5,11 @@ from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
 
-STATIC_LINK_ENCODED = "%7Bstatic%7D"
-STATIC_LINK_UNENCODED = "{static}"
+ENCODED_LINK_TO_RAW_LINK_MAP = {
+    "%7Bstatic%7D": "{static}",
+    "%7Battach%7D": "{attach}",
+    "%7Bfilename%7D": "{filename}"
+}
 
 
 class PandocReader(BaseReader):
@@ -22,34 +25,36 @@ class PandocReader(BaseReader):
         with pelican_open(source_path) as file_content:
             content = file_content
 
-            # Parse metadata
-            metadata = self._process_metadata(list(content.splitlines()))
+        # Parse metadata
+        metadata = self._process_metadata(list(content.splitlines()))
 
-            # Get arguments and extensions
-            extra_args = self.settings.get('PANDOC_ARGS', [])
-            extensions = self.settings.get('PANDOC_EXTENSIONS', '')
-            if isinstance(extensions, list):
-                extensions = ''.join(extensions)
+        # Get arguments and extensions
+        extra_args = self.settings.get('PANDOC_ARGS', [])
+        extensions = self.settings.get('PANDOC_EXTENSIONS', '')
+        if isinstance(extensions, list):
+            extensions = ''.join(extensions)
 
-            # Construct Pandoc command
-            pandoc_cmd = [
-                "pandoc", "-f", "markdown" + extensions, "-t", "html5"
-            ]
-            pandoc_cmd.extend(extra_args)
+        # Construct Pandoc command
+        pandoc_cmd = [
+            "pandoc", "-f", "markdown" + extensions, "-t", "html5"
+        ]
+        pandoc_cmd.extend(extra_args)
 
-            # Execute and retrieve HTML 5 output
-            proc = subprocess.Popen(
-                pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
-            )
+        # Execute and retrieve HTML 5 output
+        proc = subprocess.Popen(
+            pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+        )
 
-            html = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
-            status = proc.wait()
-            if status:
-                raise subprocess.CalledProcessError(status, pandoc_cmd)
+        html = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
+        status = proc.wait()
+        if status:
+            raise subprocess.CalledProcessError(status, pandoc_cmd)
 
-            # Replace all occurrences of %7Bfilename%7D to {filename}
-            # so that static links are resolved by pelican
-            html = html.replace(STATIC_LINK_ENCODED, STATIC_LINK_UNENCODED)
+        # Replace all occurrences of %7Bstatic%7D to {static},
+        # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
+        # so that static links are resolved by pelican.
+        for encoded_link, raw_link in ENCODED_LINK_TO_RAW_LINK_MAP.items():
+            html.replace(encoded_link, raw_link)
 
         return html, metadata
 
