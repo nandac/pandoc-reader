@@ -45,18 +45,18 @@ class PandocReader(BaseReader):
             pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
-        html = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
+        output = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
         status = proc.wait()
         if status:
             raise subprocess.CalledProcessError(status, pandoc_cmd)
 
         # Replace all occurrences of %7Bstatic%7D to {static},
         # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
-        # so that static links are resolved by pelican.
-        for encoded_link, raw_link in ENCODED_LINK_TO_RAW_LINK_MAP.items():
-            html.replace(encoded_link, raw_link)
+        # so that static links are resolved by pelican
+        for encoded_str, raw_str in ENCODED_LINK_TO_RAW_LINK_MAP.items():
+            output = output.replace(encoded_str, raw_str)
 
-        return html, metadata
+        return output, metadata
 
     def _process_metadata(self, text):
         """Process YAML metadata and export."""
