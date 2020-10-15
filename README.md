@@ -8,15 +8,15 @@ Pandoc's version of Markdown is a flavour of Markdown with extensions and is exp
 
 For this plugin to function you must have Pandoc installed on your system.
 
-Please follow the instructions [here](https://pandoc.org/installing.html) to install Pandoc for your system.
+Please follow the [installation instructions](https://pandoc.org/installing.html) to install Pandoc for your system.
 
 ## Installation
 
-For instructions on installing Pelican plugins please see the [Pelican Plugins](https://github.com/getpelican/pelican-plugins/blob/master/Readme.rst) documentation.
+For instructions on installing Pelican plugins please see the [Pelican Plugins]  documentation.
 
 ## Configuration
 
-The plugin expects to have metadata at the top of every Markdown file in YAML format like so:
+This plugin expects to have metadata at the top of every Markdown file in YAML as format shown below:
 
 ```yaml
 ---
@@ -36,15 +36,12 @@ author: <author-name>
 
 Failing to provide this metadata will cause the plugin to fail.
 
-Additional command line parameters can be passed to Pandoc via the `PANDOC_ARGS` parameter.
+Additional command line options can be passed to Pandoc via the `PANDOC_ARGS` parameter.
 
 ```python
 PANDOC_ARGS = [
   '--mathjax',
-  '--toc',
-  '--toc-depth=2',
-  '--number-sections',
-  '--standalone'
+  '--toc'
 ]
 ```
 
@@ -52,8 +49,8 @@ Pandoc's markdown extensions can be enabled or disabled via the `PANDOC_EXTENSIO
 
 ```python
 PANDOC_EXTENSIONS = [
-  '+hard_line_breaks',
-  '-citations'
+  '+footnotes',
+  '-pipe_tables'
 ]
 ```
 
@@ -87,3 +84,4 @@ To contribute to this project follow the steps below:
 [Markdown]: http://daringfireball.net/projects/markdown/
 [Pandoc]: https://pandoc.org/
 [Pelican]: http://getpelican.com
+[Pelican Plugins]: https://github.com/getpelican/pelican-plugins/blob/master/Readme.rst

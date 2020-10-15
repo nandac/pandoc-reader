@@ -1,11 +1,13 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
+import shutil
 import subprocess
+import sys
 
 from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
 
-ENCODED_LINK_TO_RAW_LINK_MAP = {
+ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
     "%7Battach%7D": "{attach}",
     "%7Bfilename%7D": "{filename}"
@@ -20,12 +22,15 @@ class PandocReader(BaseReader):
 
     def read(self, source_path):
         """Parse Pandoc Markdown and return HTML 5 output and metadata."""
-        content = ""
+        # Check if pandoc is installed and is executable
+        if not shutil.which("pandoc"):
+            sys.exit("Please install Pandoc before using this plugin.")
 
+        content = ""
         with pelican_open(source_path) as file_content:
             content = file_content
 
-        # Parse metadata
+        # Parse YAML metadata
         metadata = self._process_metadata(list(content.splitlines()))
 
         # Get arguments and extensions
@@ -36,7 +41,7 @@ class PandocReader(BaseReader):
 
         # Construct Pandoc command
         pandoc_cmd = [
-            "pandoc", "-f", "markdown" + extensions, "-t", "html5"
+            "pandoc", "--from", "markdown" + extensions, "--to", "html5"
         ]
         pandoc_cmd.extend(extra_args)
 
@@ -53,7 +58,7 @@ class PandocReader(BaseReader):
         # Replace all occurrences of %7Bstatic%7D to {static},
         # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
         # so that static links are resolved by pelican
-        for encoded_str, raw_str in ENCODED_LINK_TO_RAW_LINK_MAP.items():
+        for encoded_str, raw_str in ENCODED_LINKS_TO_RAW_LINKS_MAP.items():
             output = output.replace(encoded_str, raw_str)
 
         return output, metadata
@@ -62,8 +67,7 @@ class PandocReader(BaseReader):
         """Process YAML metadata and export."""
         metadata = {}
 
-        # Check that the first line of the file
-        # starts with a YAML header
+        # Check that the first line of the file starts with a YAML header
         if text[0].strip() not in ["---", "..."]:
             raise Exception("Could not find metadata header '---' or '...'")
 
