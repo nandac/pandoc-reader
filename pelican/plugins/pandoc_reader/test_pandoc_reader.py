@@ -10,7 +10,7 @@ class TestPandocReader(unittest.TestCase):
 
     def test_pandoc_installed(self):
         """Check if Pandoc is installed."""
-        self.assertRaises(Exception, PandocReader.read, os.getcwd())
+        self.assertRaises(Exception, PandocReader.read(), os.getcwd())
         with self.assertRaises(TypeError) as context:
             PandocReader.read(os.getcwd())
         self.assertEqual(
