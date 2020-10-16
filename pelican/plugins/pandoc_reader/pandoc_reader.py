@@ -11,7 +11,7 @@ from pelican import signals
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
     "%7Battach%7D": "{attach}",
-    "%7Bfilename%7D": "{filename}"
+    "%7Bfilename%7D": "{filename}",
 }
 
 
@@ -19,7 +19,7 @@ class PandocReader(BaseReader):
     """Process files written in Pandoc Markdown."""
 
     enabled = True
-    file_extensions = ['md', 'markdown', 'mkd', 'mdown']
+    file_extensions = ["md", "markdown", "mkd", "mdown"]
 
     def read(self, source_path):
         """Parse Pandoc Markdown and return HTML 5 output and metadata."""
@@ -35,15 +35,13 @@ class PandocReader(BaseReader):
         metadata = self._process_metadata(list(content.splitlines()))
 
         # Get arguments and extensions
-        extra_args = self.settings.get('PANDOC_ARGS', [])
-        extensions = self.settings.get('PANDOC_EXTENSIONS', '')
+        extra_args = self.settings.get("PANDOC_ARGS", [])
+        extensions = self.settings.get("PANDOC_EXTENSIONS", "")
         if isinstance(extensions, list):
-            extensions = ''.join(extensions)
+            extensions = "".join(extensions)
 
         # Construct Pandoc command
-        pandoc_cmd = [
-            "pandoc", "--from", "markdown" + extensions, "--to", "html5"
-        ]
+        pandoc_cmd = ["pandoc", "--from", "markdown" + extensions, "--to", "html5"]
         pandoc_cmd.extend(extra_args)
 
         # Execute and retrieve HTML 5 output
@@ -51,7 +49,7 @@ class PandocReader(BaseReader):
             pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
-        output = proc.communicate(content.encode('utf-8'))[0].decode('utf-8')
+        output = proc.communicate(content.encode("utf-8"))[0].decode("utf-8")
         status = proc.wait()
         if status:
             raise subprocess.CalledProcessError(status, pandoc_cmd)
@@ -86,7 +84,7 @@ class PandocReader(BaseReader):
 
         # Process the YAML block
         for line in lines[:yaml_end]:
-            metalist = line.split(':', 1)
+            metalist = line.split(":", 1)
             if len(metalist) == 2:
                 key, value = metalist[0].lower(), metalist[1].strip()
                 metadata[key] = self.process_metadata(key, value)
