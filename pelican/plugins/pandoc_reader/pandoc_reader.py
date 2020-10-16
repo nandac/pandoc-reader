@@ -41,7 +41,7 @@ class PandocReader(BaseReader):
             extensions = "".join(extensions)
 
         # Construct Pandoc command
-        pandoc_cmd = ["pandoc", "--from", "markdown" + extensions, "--to", "html5"]
+        pandoc_cmd = ["pandoc", "-f", "markdown" + extensions, "-t", "html5"]
         pandoc_cmd.extend(extra_args)
 
         # Execute and retrieve HTML 5 output
