@@ -1,7 +1,6 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
 import shutil
 import subprocess
-import sys
 
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
@@ -25,7 +24,7 @@ class PandocReader(BaseReader):
         """Parse Pandoc Markdown and return HTML 5 output and metadata."""
         # Check if pandoc is installed and is executable
         if not shutil.which("pandoc"):
-            sys.exit("Please install Pandoc before using this plugin.")
+            raise Exception("Could not find Pandoc. Please install.")
 
         content = ""
         with pelican_open(source_path) as file_content:
