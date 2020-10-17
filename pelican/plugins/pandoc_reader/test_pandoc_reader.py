@@ -7,7 +7,7 @@ from pandoc_reader import PandocReader
 from pelican.tests.support import get_settings
 
 DIR_PATH = os.path.dirname(__file__)
-FILE_PATH = os.path.abspath(os.path.join(DIR_PATH, "fixtures")
+FILE_PATH = os.path.abspath(os.path.join(DIR_PATH, "fixtures"))
 
 
 class TestPandocReader(unittest.TestCase):
