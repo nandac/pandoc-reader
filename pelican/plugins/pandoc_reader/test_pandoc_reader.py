@@ -6,7 +6,8 @@ import unittest
 from pandoc_reader import PandocReader
 from pelican.tests.support import get_settings
 
-FILE_PATH = os.path.join(os.getcwd(), "fixtures")
+ABS_PATH = os.path.abspath(__file__)
+FILE_PATH = os.path.join(ABS_PATH, "fixtures")
 
 
 class TestPandocReader(unittest.TestCase):
