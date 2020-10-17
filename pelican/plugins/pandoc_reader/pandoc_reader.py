@@ -65,6 +65,10 @@ class PandocReader(BaseReader):
         """Process YAML metadata and export."""
         metadata = {}
 
+        # Check that the given text is not empty
+        if not text:
+            raise Exception("Could not find metadata. File is empty")
+
         # Check that the first line of the file starts with a YAML header
         if text[0].strip() not in ["---", "..."]:
             raise Exception("Could not find metadata header '---' or '...'")
