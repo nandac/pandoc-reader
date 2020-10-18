@@ -34,21 +34,42 @@ class PandocReader(BaseReader):
         metadata = self._process_metadata(list(content.splitlines()))
 
         # Get arguments and extensions
-        extra_args = self.settings.get("PANDOC_ARGS", [])
-        extensions = self.settings.get("PANDOC_EXTENSIONS", "")
-        if isinstance(extensions, list):
-            extensions = "".join(extensions)
+        if not self.settings.get("PANDOC_DEFAULT_FILES"):
+            extra_args = self.settings.get("PANDOC_ARGS", [])
+            extensions = self.settings.get("PANDOC_EXTENSIONS", "")
+            if isinstance(extensions, list):
+                extensions = "".join(extensions)
 
-        # Construct Pandoc command
-        pandoc_cmd = ["pandoc", "-f", "markdown" + extensions, "-t", "html5"]
-        pandoc_cmd.extend(extra_args)
+            # Construct Pandoc command
+            pandoc_cmd = [
+                "pandoc",
+                "--from",
+                "markdown" + extensions,
+                "--to",
+                "html5",
+            ]
+            pandoc_cmd.extend(extra_args)
+        else:
+            defaults_cmd_str = ""
+            for file in self.settings.get("PANDOC_DEFAULT_FILES"):
+                defaults_cmd_str += " --defaults=file"
+
+            # Construct Pandoc command
+            pandoc_cmd = [
+                "pandoc",
+                defaults_cmd_str,
+                " --from",
+                "markdown",
+                "--to",
+                "html5",
+            ]
 
         # Execute and retrieve HTML 5 output
         proc = subprocess.Popen(
             pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
         )
 
-        output = proc.communicate(content.encode("utf-8"))[0].decode("utf-8")
+        output = proc.communicate(content.encode("UTF-8"))[0].decode("UTF-8")
         status = proc.wait()
         if status:
             raise subprocess.CalledProcessError(status, pandoc_cmd)
