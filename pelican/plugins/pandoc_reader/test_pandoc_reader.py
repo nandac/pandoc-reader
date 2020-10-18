@@ -60,7 +60,8 @@ class TestPandocReader(unittest.TestCase):
 
         message = str(context_manager.exception)
         self.assertEqual(
-            "Could not find metadata header '---' or '...'", message
+            "Could not find metadata header '---' or '...'",
+            message
         )
 
     def test_metadata_block_end(self):
