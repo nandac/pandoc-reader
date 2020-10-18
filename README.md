@@ -12,7 +12,7 @@ Please follow the [installation instructions](https://pandoc.org/installing.html
 
 ## Installation
 
-The plugin can be installed the command:
+The plugin may be installed using [pip](https://pip.pypa.io/en/stable/installing/):
 
 ```bash
 python -m pip install pelican-pandoc-reader
