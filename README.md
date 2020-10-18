@@ -20,49 +20,54 @@ python -m pip install pelican-pandoc-reader
 
 ## Usage
 
-This plugin converts Pandoc's Markdown into HTML 5. Formats like [CommonMark](https://commonmark.org/) may be supported at some future time.
+This plugin converts Pandoc's Markdown into HTML 5. Input formats like [CommonMark](https://commonmark.org/) may be supported at some future time.
 
 Conversion to formats other than HTML 5 will not be supported.
 
 ### Specifying Pandoc Options
 
-There are two ways to specify options to Pandoc:
+The plugin supports two methods to pass options to Pandoc and are **mutually exclusive**. These methods are described in the sections below.
 
-1. You may configure two constants in your `pelicanconf.py` file namely:
-    * `PANDOC_ARGS`
-    * `PANDOC_EXTENSIONS`
+#### Method One
 
-    In the `PANDOC_ARGS` parameter you may specify any arguments supported by Pandoc.
+You may configure two constants in your `pelicanconf.py` file namely:
 
-    ```python
-    PANDOC_ARGS = [
-      '--mathjax',
-      '--toc'
-    ]
-    ```
+* `PANDOC_ARGS`
+* `PANDOC_EXTENSIONS`
 
-    **Note: We do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
+In the `PANDOC_ARGS` parameter you may specify any arguments supported by Pandoc.
 
-    In the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
+```python
+PANDOC_ARGS = [
+  '--mathjax',
+  '--toc'
+]
+```
 
-    ```python
-    PANDOC_EXTENSIONS = [
-      '+footnotes',  # Enabled extension
-      '-pipe_tables' # Disabled extension
-    ]
-    ```
+**Note: We do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
 
-1. The second method is to specify a path to a YAML file with all your preferences by making use of the `PANDOC_DEFAULT_FILES` constant in your `pelicanconf.py` file.
+In the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
 
-    ```python
-    PANDOC_DEFAULT_FILES = [
-      '<path/to/default/file>'
-    ]
-    ```
+```python
+PANDOC_EXTENSIONS = [
+  '+footnotes',  # Enabled extension
+  '-pipe_tables' # Disabled extension
+]
+```
 
-    The format of this file is described [here](https://pandoc.org/MANUAL.html#default-files).
+#### Method Two
 
-    **Note: Again we do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
+The second method is to specify a path to a YAML file, with all your preferences, by setting the `PANDOC_DEFAULT_FILES` constant in your `pelicanconf.py` file.
+
+```python
+PANDOC_DEFAULT_FILES = [
+  '<path/to/default/file>'
+]
+```
+
+The format of this file is described [here](https://pandoc.org/MANUAL.html#default-files).
+
+**Note: Again we do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
 
 ### Specifying File Metadata
 
