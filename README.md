@@ -90,8 +90,6 @@ date: <date>
 
 More information about specifying file metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 
-
-
 ## Contributing
 
 Contributions are welcome and much appreciated. Every little bit helps. You can contribute by improving the documentation, adding missing features, and fixing bugs. You can also help out by reviewing and commenting on [existing issues](https://github.com/pelican-plugins/pandoc-reader/issues).
