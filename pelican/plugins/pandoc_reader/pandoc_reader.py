@@ -1,12 +1,12 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
 import shutil
 import subprocess
+
 import yaml
 
+from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
-
-from pelican import signals
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
@@ -14,16 +14,9 @@ ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bfilename%7D": "{filename}",
 }
 
-VALID_INPUT_FORMATS = (
-    "markdown",
-    "commonmark",
-    "gfm"
-)
+VALID_INPUT_FORMATS = ("markdown", "commonmark", "gfm")
+VALID_OUTPUT_FORMATS = ("html", "html5")
 
-VALID_OUTPUT_FORMATS = (
-    "html",
-    "html5"
-)
 
 class PandocReader(BaseReader):
     """Process files written in Pandoc Markdown."""
@@ -63,7 +56,7 @@ class PandocReader(BaseReader):
         else:
             defaults_cmd_str = ""
             for filepath in self.settings.get("PANDOC_DEFAULT_FILES"):
-                self._check_defaults(filepath)
+                self.check_defaults(filepath)
                 defaults_cmd_str += " --defaults={0}".format(filepath)
 
             # Construct Pandoc command
@@ -91,7 +84,8 @@ class PandocReader(BaseReader):
 
         return output, metadata
 
-    def _check_defaults(self, filepath):
+    @staticmethod
+    def check_defaults(filepath):
         """Check if the given Pandoc defaults file has valid values."""
         defaults = {}
 
@@ -104,15 +98,11 @@ class PandocReader(BaseReader):
 
         # Raise an exception if standalone is true
         if standalone:
-            raise ValueError(
-                "The default standalone should be set to false."
-            )
+            raise ValueError("The default standalone should be set to false.")
 
         # Raise an exception if self-contained is true
         if self_contained:
-            raise ValueError(
-                "The default self-contained should be set to false."
-            )
+            raise ValueError("The default self-contained should be set to false.")
 
         reader_input = defaults.get("reader", "")
         from_input = defaults.get("from", "")
@@ -122,7 +112,7 @@ class PandocReader(BaseReader):
             raise ValueError("No input format specified.")
 
         # Case where reader is specified
-        elif reader_input and not from_input:
+        if reader_input and not from_input:
             reader_prefix = reader_input.replace("+", "-").split("-")[0]
 
             # Check to see if the reader_prefix matches a valid input type
@@ -130,7 +120,7 @@ class PandocReader(BaseReader):
                 raise ValueError("Input type has to be a markdown variant.")
 
         # Case where from is specified
-        elif not reader_input and from_input:
+        if not reader_input and from_input:
             reader_prefix = from_input.replace("+", "-").split("-")[0]
 
             # Check to see if the reader_prefix matches a valid input type
@@ -138,27 +128,32 @@ class PandocReader(BaseReader):
                 raise ValueError("Input type has to be a markdown variant.")
 
         # Case where both reader and from are specified which is not supported
-        elif reader_input and from_input:
-            raise ValueError((
-                "Specifying both from and reader values is not supported."
-                " Please specify just one."
-            ))
+        if reader_input and from_input:
+            raise ValueError(
+                (
+                    "Specifying both from and reader values is not supported."
+                    " Please specify just one."
+                )
+            )
 
         writer_output = defaults.get("writer", "")
         to_output = defaults.get("to", "")
 
         # Case where both writer and to are specified which is not supported
         if writer_output and to_output:
-            raise ValueError((
-                "Specifying both to and writer values is not supported."
-                " Please specify just one."
-            ))
+            raise ValueError(
+                (
+                    "Specifying both to and writer values is not supported."
+                    " Please specify just one."
+                )
+            )
 
         # Case where neither writer not to value is set to html
-        if (writer_output not in VALID_OUTPUT_FORMATS and
-                to_output not in VALID_OUTPUT_FORMATS):
+        if (
+            writer_output not in VALID_OUTPUT_FORMATS
+            and to_output not in VALID_OUTPUT_FORMATS
+        ):
             raise ValueError("Output format type must be html or html5")
-
 
     def _process_metadata(self, text):
         """Process YAML metadata and export."""
