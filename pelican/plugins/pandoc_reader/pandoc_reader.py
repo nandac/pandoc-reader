@@ -1,7 +1,6 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
 import shutil
 import subprocess
-
 import yaml
 
 from pelican import signals
