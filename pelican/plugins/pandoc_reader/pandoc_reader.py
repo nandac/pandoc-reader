@@ -2,11 +2,11 @@
 import shutil
 import subprocess
 
+import yaml
+
 from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
-
-import yaml
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
