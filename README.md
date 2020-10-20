@@ -6,13 +6,19 @@ Pandoc Reader is a [Pelican](http://getpelican.com) plugin to convert documents 
 
 ## Prerequisites
 
-For this plugin to function you must have Pandoc installed on your local machine.
+For this plugin to function you must have Pandoc and the [PyYAML](https://pypi.org/project/PyYAML/) python package installed on your system.
 
 Please follow the [installation instructions](https://pandoc.org/installing.html) to install Pandoc.
 
+To install PyYAML execute the following command using [pip](https://pip.pypa.io/en/stable/installing/):
+
+```bash
+pip install PyYAML==5.3.1
+```
+
 ## Installation
 
-The plugin may be installed using [pip](https://pip.pypa.io/en/stable/installing/):
+The plugin may be installed using pip:
 
 ```bash
 python -m pip install pelican-pandoc-reader
@@ -20,9 +26,7 @@ python -m pip install pelican-pandoc-reader
 
 ## Usage
 
-This plugin converts Pandoc's Markdown into HTML 5. Input formats like [CommonMark](https://commonmark.org/) may be supported at some future time.
-
-Conversion to formats other than HTML 5 will not be supported.
+This plugin converts Pandoc's Markdown into HTML 5. Conversion to formats other than HTML 5 will not be supported.
 
 ### Specifying Pandoc Options
 
@@ -65,9 +69,11 @@ PANDOC_DEFAULT_FILES = [
 ]
 ```
 
+Using a default file has the added benefit of allowing you to use other markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
+
 The format of this file is described [here](https://pandoc.org/MANUAL.html#default-files).
 
-**Note: Again we do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
+**Note: If `--standalone` or `--self-contained` are set to `true` you will get an error message.**
 
 ### Specifying File Metadata
 

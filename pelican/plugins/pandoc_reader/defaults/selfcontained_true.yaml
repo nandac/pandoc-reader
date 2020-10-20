@@ -1,0 +1,12 @@
+# selfcontained_true.yaml
+#
+# Defaults for generating HTML5 from Markdown using Pandoc
+# using the Pelican Pandoc Reader plugin
+#
+reader: markdown+smart+citations+implicit_figures
+writer: html5
+self-contained: true
+
+html-math-method:
+  method: mathjax
+  url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"

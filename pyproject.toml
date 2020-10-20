@@ -31,6 +31,7 @@ classifiers = [
 python = "^3.6"
 pelican = "^4.5"
 markdown = {version = "^3.2.2", optional = true}
+pyyaml = "^5.3.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^19.10b0", allow-prereleases = true}
@@ -45,6 +46,7 @@ pytest-cov = "^2.7"
 pytest-pythonpath = "^0.7.3"
 pytest-sugar = "^0.9.4"
 Werkzeug = "^1.0"
+pyyaml = "^5.3.1"
 
 [tool.poetry.extras]
 markdown = ["markdown"]

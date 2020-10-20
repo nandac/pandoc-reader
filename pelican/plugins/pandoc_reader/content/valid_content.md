@@ -1,6 +1,6 @@
 ---
 title: Valid Content
-author: Nandakumar Chandrasekhar
+author: My Author
 date: 2020-10-16
 ---
 
