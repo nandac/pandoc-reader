@@ -1,10 +1,9 @@
-# standalone_true.yaml
+# valid_defaults.yml
 #
-# A test default file that sets standalone to true
+# A test default file that is valid
 #
 reader: markdown+smart+citations+implicit_figures
 writer: html5
-standalone: true
 
 html-math-method:
   method: mathjax

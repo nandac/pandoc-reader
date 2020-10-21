@@ -48,7 +48,7 @@ PANDOC_ARGS = [
 ]
 ```
 
-**Note: We do not recommend specifying `--standalone` or `--self-contained` as this would  conflict with you theme's template files.**
+**Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error.**
 
 In the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
 

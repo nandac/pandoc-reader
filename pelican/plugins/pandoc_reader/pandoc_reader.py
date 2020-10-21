@@ -1,7 +1,8 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
 import shutil
 import subprocess
-import yaml
+
+from yaml import safe_load
 
 from pelican import signals
 from pelican.readers import BaseReader
@@ -15,6 +16,7 @@ ENCODED_LINKS_TO_RAW_LINKS_MAP = {
 
 VALID_INPUT_FORMATS = ("markdown", "commonmark", "gfm")
 VALID_OUTPUT_FORMATS = ("html", "html5")
+UNSUPPORTED_ARGUMENTS = ("--standalone", "--self-contained")
 
 
 class PandocReader(BaseReader):
@@ -38,7 +40,7 @@ class PandocReader(BaseReader):
 
         # Get arguments and extensions
         if not self.settings.get("PANDOC_DEFAULT_FILES"):
-            extra_args = self.settings.get("PANDOC_ARGS", [])
+            arguments = self.settings.get("PANDOC_ARGS", [])
             extensions = self.settings.get("PANDOC_EXTENSIONS", "")
             if isinstance(extensions, list):
                 extensions = "".join(extensions)
@@ -51,18 +53,17 @@ class PandocReader(BaseReader):
                 "--to",
                 "html5",
             ]
-            pandoc_cmd.extend(extra_args)
+
+            self.check_arguments(arguments)
+            pandoc_cmd.extend(arguments)
         else:
-            defaults_cmd_str = ""
+            default_files_cmd = []
             for filepath in self.settings.get("PANDOC_DEFAULT_FILES"):
                 self.check_defaults(filepath)
-                defaults_cmd_str += " --defaults={0}".format(filepath)
+                default_files_cmd.append("--defaults={0}".format(filepath))
 
             # Construct Pandoc command
-            pandoc_cmd = [
-                "pandoc",
-                defaults_cmd_str,
-            ]
+            pandoc_cmd = ["pandoc"] + default_files_cmd
 
         # Execute Pandoc command
         proc = subprocess.Popen(
@@ -84,13 +85,20 @@ class PandocReader(BaseReader):
         return output, metadata
 
     @staticmethod
+    def check_arguments(arguments):
+        """Check to see that only supported arguments have been passed."""
+        for argument in arguments:
+            if argument in UNSUPPORTED_ARGUMENTS:
+                raise ValueError("Argument {0} is not supported.".format(argument))
+
+    @staticmethod
     def check_defaults(filepath):
         """Check if the given Pandoc defaults file has valid values."""
         defaults = {}
 
         # Convert YAML data to a Python dictionary
         with open(filepath) as defaults_file:
-            defaults = yaml.safe_load(defaults_file)
+            defaults = safe_load(defaults_file)
 
         standalone = defaults.get("standalone", "")
         self_contained = defaults.get("self-contained", "")
@@ -130,7 +138,7 @@ class PandocReader(BaseReader):
         if reader_input and from_input:
             raise ValueError(
                 (
-                    "Specifying both from and reader values is not supported."
+                    "Specifying both from and reader is not supported."
                     " Please specify just one."
                 )
             )
@@ -142,17 +150,17 @@ class PandocReader(BaseReader):
         if writer_output and to_output:
             raise ValueError(
                 (
-                    "Specifying both to and writer values is not supported."
+                    "Specifying both to and writer is not supported."
                     " Please specify just one."
                 )
             )
 
-        # Case where neither writer not to value is set to html
+        # Case where neither writer nor to value is set to html
         if (
             writer_output not in VALID_OUTPUT_FORMATS
             and to_output not in VALID_OUTPUT_FORMATS
         ):
-            raise ValueError("Output format type must be html or html5")
+            raise ValueError("Output format type must be html or html5.")
 
     def _process_metadata(self, text):
         """Process YAML metadata and export."""
@@ -160,11 +168,11 @@ class PandocReader(BaseReader):
 
         # Check that the given text is not empty
         if not text:
-            raise Exception("Could not find metadata. File is empty")
+            raise Exception("Could not find metadata. File is empty.")
 
         # Check that the first line of the file starts with a YAML header
         if text[0].strip() not in ["---", "..."]:
-            raise Exception("Could not find metadata header '---' or '...'")
+            raise Exception("Could not find metadata header '...' or '---'.")
 
         # Find the end of the YAML block
         lines = text[1:]

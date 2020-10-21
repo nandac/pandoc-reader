@@ -1,10 +1,9 @@
-# standalone_true.yaml
+# invalid_writer_output_format.yaml
 #
-# A test default file that sets standalone to true
+# A test default file that sets writer to an invalid output format
 #
 reader: markdown+smart+citations+implicit_figures
-writer: html5
-standalone: true
+writer: myoutputformat
 
 html-math-method:
   method: mathjax
