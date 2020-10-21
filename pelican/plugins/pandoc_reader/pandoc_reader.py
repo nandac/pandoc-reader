@@ -3,7 +3,6 @@ import shutil
 import subprocess
 
 from yaml import safe_load
-
 from pelican import signals
 from pelican.readers import BaseReader
 from pelican.utils import pelican_open
