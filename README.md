@@ -13,8 +13,13 @@ Please follow the [installation instructions](https://pandoc.org/installing.html
 To install PyYAML execute the following command using [pip](https://pip.pypa.io/en/stable/installing/):
 
 ```bash
-pip install PyYAML==5.3.1
+pip install PyYAML
 ```
+
+This package has been tested using the following versions of the above dependencies:
+
+* Pandoc 2.11.0
+* PyYAML 5.3.1
 
 ## Installation
 
@@ -32,14 +37,14 @@ This plugin converts Pandoc's Markdown into HTML 5. Conversion to formats other 
 
 The plugin supports two methods to pass options to Pandoc and are **mutually exclusive**. These methods are described in the sections below.
 
-#### Method One
+#### Method One: Using Settings in `pelicanconf.py`
 
-You may configure two constants in your `pelicanconf.py` file namely:
+The first method involves configuring two settings in your `pelicanconf.py` file:
 
 * `PANDOC_ARGS`
 * `PANDOC_EXTENSIONS`
 
-In the `PANDOC_ARGS` parameter you may specify any arguments supported by Pandoc.
+In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc ah shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -50,7 +55,7 @@ PANDOC_ARGS = [
 
 **Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error.**
 
-In the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
+Then in the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of the supported [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
 
 ```python
 PANDOC_EXTENSIONS = [
@@ -59,9 +64,11 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-#### Method Two
+#### Method Two: Using Pandoc Defaults Files
 
-The second method is to specify a path to a YAML file, with all your preferences, by setting the `PANDOC_DEFAULT_FILES` constant in your `pelicanconf.py` file.
+The second method involves specifying the path(s) to one or more YAML file(s), with all your preferences.
+
+These paths should be set in your `pelicanconf.py` file by using the setting `PANDOC_DEFAULT_FILES`. The paths maybe absolute or relative but we recommend using relative paths as they are more portable.
 
 ```python
 PANDOC_DEFAULT_FILES = [
@@ -97,9 +104,9 @@ date: <date>
 ...
 ```
 
-**Note: Specifying the file metadata in the format above does not comply with Pelican's format. If you wish to stop using this plugin and switch back to Pelican's native Markdown you may have to change the metadata format.**
+**Note: Specifying the file metadata in the format above is a requirement of Pandoc. Pelican's recommended format is different and may require you to rewrite the metadata in your files, if you stop using this plugin.**
 
-More information about specifying file metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
+More information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 
 ## Contributing
 
@@ -109,4 +116,4 @@ To start contributing to this plugin, review the [Contributing to Pelican](https
 
 ## Credits
 
-Originally authored by [Hinrich B. Winther](https://github.com/liob), December 2014, and subsequently enhanced by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) with additional features.
+Originally authored by [Hinrich B. Winther](https://github.com/liob), December 2014, and subsequently forked and enhanced by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) with additional features in October 2020.
