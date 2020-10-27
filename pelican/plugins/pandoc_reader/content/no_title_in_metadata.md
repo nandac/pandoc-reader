@@ -1,5 +1,4 @@
 ---
-title: Valid Content
 author: My Author
 date: 2020-10-16
 ---

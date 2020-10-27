@@ -35,8 +35,14 @@ class PandocReader(BaseReader):
         with pelican_open(source_path) as file_content:
             content = file_content
 
+        # Evaluate the list immediately to stop it from becoming a generator
+        content_line_by_line = list(content.splitlines())
+
         # Parse YAML metadata
-        metadata = self._process_metadata(list(content.splitlines()))
+        metadata, yaml_end = self._process_metadata(content_line_by_line)
+
+        # Insert title metadata argument in content after metadata block
+        content = self.insert_title(content_line_by_line, metadata, yaml_end)
 
         # Get arguments and extensions
         if not self.settings.get("PANDOC_DEFAULT_FILES"):
@@ -162,6 +168,22 @@ class PandocReader(BaseReader):
         ):
             raise ValueError("Output format type must be html or html5.")
 
+    @staticmethod
+    def insert_title(content, metadata, yaml_end):
+        # Construct page title retrieved from metadata
+        try:
+            title = "# {}".format(str(metadata["title"]))
+        except KeyError:
+            raise KeyError("No title field found in metadata.")
+
+        # Insert title to the start of the text
+        content.insert(yaml_end + 2, title)
+
+        # Reconstruct the content back into string delimited by new lines
+        content = "\n".join(list(content))
+
+        return content
+
     def _process_metadata(self, text):
         """Process YAML metadata and export."""
         metadata = {}
@@ -192,7 +214,7 @@ class PandocReader(BaseReader):
             if len(metalist) == 2:
                 key, value = metalist[0].lower(), metalist[1].strip()
                 metadata[key] = self.process_metadata(key, value)
-        return metadata
+        return metadata, yaml_end
 
 
 def add_reader(readers):
