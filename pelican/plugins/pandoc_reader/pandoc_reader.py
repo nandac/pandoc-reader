@@ -212,7 +212,7 @@ class PandocReader(BaseReader):
         for line in lines[:yaml_end]:
             metalist = line.split(":", 1)
             if len(metalist) == 2:
-                key, value = metalist[0].lower(), metalist[1].strip()
+                key, value = metalist[0].lower(), metalist[1].strip().strip('"')
                 metadata[key] = self.process_metadata(key, value)
         return metadata, yaml_end
 
