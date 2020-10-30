@@ -88,9 +88,9 @@ The plugin expects all markdown files to start with a YAML block as shown below.
 
 ```yaml
 ---
-title: <post-title>
-author: <author-name>
-data: <date>
+title: "<post-title>"
+author: "<author-name>"
+data: "<date>"
 ---
 ```
 
