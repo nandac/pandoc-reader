@@ -98,13 +98,13 @@ or
 
 ```yaml
 ...
-title: <post-title>
-author: <author-name>
-date: <date>
+title: "<post-title>"
+author: "<author-name>"
+date: "<date>"
 ...
 ```
 
-The plugin automatically insert title metadata as the main heading of your post or page. Therefore, there is no need to specify the first heading in your content.
+The plugin automatically inserts title metadata field as the main heading of your post or page. Therefore, there is no need to specify the first heading in your content.
 
 Failing to provide a title metadata field will result in an error.
 
