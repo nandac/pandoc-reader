@@ -104,11 +104,7 @@ date: "<date>"
 ...
 ```
 
-The plugin automatically inserts title metadata field as the main heading of your post or page. Therefore, there is no need to specify the first heading in your content.
-
-Failing to provide a title metadata field will result in an error.
-
-**Note: Specifying the file metadata in the format above is a requirement of Pandoc. Pelican's recommended format is different and may require you to rewrite the metadata in your files, if you stop using this plugin.**
+**Note: Pelican's recommended format for metadata is different to what is specified here, and may require you to rewrite the metadata in your files, if you stop using this plugin.**
 
 More information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 

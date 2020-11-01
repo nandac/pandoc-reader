@@ -104,22 +104,6 @@ class TestPandocReader(unittest.TestCase):
         message = str(context_manager.exception)
         self.assertEqual("Could not find end of metadata block.", message)
 
-    def test_no_title_field_in_metadata(self):
-        """Check if an exception is raised if no title is found in metadata."""
-        settings = get_settings(
-            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS, PANDOC_ARGS=PANDOC_ARGS
-        )
-
-        pandoc_reader = PandocReader(settings)
-        source_path = os.path.join(CONTENT_PATH, "no_title_in_metadata.md")
-
-        # Metadata blocks should end with '___' or '...' if not it should fail
-        with self.assertRaises(KeyError) as context_manager:
-            pandoc_reader.read(source_path)
-
-        message = str(context_manager.exception)
-        self.assertEqual("'No title field found in metadata.'", message)
-
     def test_invalid_standalone_argument(self):
         """Check that specifying --standalone raises an exception."""
         pandoc_arguments = ["--standalone"]
@@ -164,7 +148,6 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<h1 id="valid-content">Valid Content</h1>\n'
                 "<p>This is some valid content that should pass."
                 " If it does not pass we"
                 " will know something is wrong.</p>\n"
@@ -188,7 +171,6 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<h1 id="mathjax-content">MathJax Content</h1>\n'
                 '<p><span class="math display">\\[\ne^{i\\theta} = '
                 "\\cos\\theta + i \\sin\\theta.\n\\]</span></p>\n"
             ),
@@ -214,8 +196,6 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<h1 id="valid-content-with-fictitious-raw-paths">'
-                "Valid Content with Fictitious Raw Paths</h1>\n"
                 "<p>This is some valid content that should pass."
                 " If it does not pass we will know something is wrong.</p>\n"
                 "<p>Our fictitious internal files are available"
@@ -422,10 +402,8 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<h1 id="valid-content">Valid Content</h1>\n<p>This'
-                " is some valid content that should pass."
-                " If it does not pass we"
-                " will know something is wrong.</p>\n"
+                "<p>This is some valid content that should pass."
+                " If it does not pass we will know something is wrong.</p>\n"
             ),
             output,
         )
@@ -447,7 +425,6 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<h1 id="mathjax-content">MathJax Content</h1>\n'
                 '<p><span class="math display">\\[\ne^{i\\theta} = '
                 "\\cos\\theta + i \\sin\\theta.\n\\]</span></p>\n"
             ),
