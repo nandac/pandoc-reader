@@ -48,12 +48,12 @@ In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc 
 
 ```python
 PANDOC_ARGS = [
-  '--mathjax',
-  '--toc'
+  '--mathjax'
+  '--citeproc'
 ]
 ```
 
-**Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error.**
+**Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error. Arguments that only are only relevant in standalone mode such as `--highlight-style` will not take effect and will not output an error.**
 
 Then in the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of the supported [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
 
@@ -72,15 +72,23 @@ These paths should be set in your `pelicanconf.py` file by using the setting `PA
 
 ```python
 PANDOC_DEFAULT_FILES = [
-  '<path/to/default/file>'
+  '<path/to/default/file_one.yaml>',
+  '<path/to/default/file_two.yaml>'
 ]
 ```
 
-Using a default file has the added benefit of allowing you to use other markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
+Using default files has the added benefit of allowing you to use other markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
 
-The format of this file is described [here](https://pandoc.org/MANUAL.html#default-files).
+Here is a simple example of a content that should be available in a Pandoc defaults file:
 
-**Note: If `--standalone` or `--self-contained` are set to `true` you will get an error message.**
+```yaml
+reader: markdown
+writer: html5
+```
+
+Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example of the options available for this file.
+
+**Note: If `standalone` or `self-contained` are set to `true` you will get an error message. Specifying fields that are only relevant in standalone mode such as `highlight-style` will not take effect and will not output an error.**
 
 ### Specifying File Metadata
 
