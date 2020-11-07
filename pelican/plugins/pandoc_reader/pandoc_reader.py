@@ -240,9 +240,9 @@ class PandocReader(BaseReader):
                 key, value = metalist[0].lower(), metalist[1].strip().strip('"')
                 metadata[key] = self.process_metadata(key, value)
 
-        # Add the table of contents to the metadata
+        # Add the table of contents to the content's metadata
         if table_of_contents:
-            metadata["toc"] = table_of_contents
+            metadata["toc"] = self.process_metadata("toc", table_of_contents)
         return metadata
 
 
