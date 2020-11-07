@@ -53,7 +53,25 @@ PANDOC_ARGS = [
 ]
 ```
 
-**Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error. Arguments that only are only relevant in standalone mode such as `--highlight-style` will not take effect and will not output an error.**
+Generation of a table of contents is supported by this plugin by specifying the `--toc` or `--table-of-contents` argument as shown below:
+
+```python
+PANDOC_ARGS = [
+  '--toc'
+]
+```
+
+or
+
+```python
+PANDOC_ARGS = [
+  '--table-of-contents'
+]
+```
+
+The table of contents will be available as an HTML snippet in the metadata of an article and can be referenced as `{{ article.toc }}` in templates.
+
+**Note: Specifying the arguments `--standalone` or `--self-contained` are not supported and will throw an error. Arguments that are relevant only in standalone mode such as `--highlight-style` will not take effect except for `--toc` of `table-of-contents`.**
 
 Then in the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of the supported [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
 
@@ -86,9 +104,17 @@ reader: markdown
 writer: html5
 ```
 
+Generation of a table of contents is supported by this plugin by setting the `table-of-contents` to `true` as shown below:
+
+```yaml
+table-of-contents: true
+```
+
+The table of contents will be available as an HTML snippet in the metadata of an article and can be referenced as `{{ article.toc }}` in templates.
+
 Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example of the options available for this file.
 
-**Note: If `standalone` or `self-contained` are set to `true` you will get an error message. Specifying fields that are only relevant in standalone mode such as `highlight-style` will not take effect and will not output an error.**
+**Note: If `standalone` or `self-contained` are set to `true` you will get an error message. Specifying fields that are only relevant in standalone mode such as `highlight-style` will not take effect except for `table-of-contents`.**
 
 ### Specifying File Metadata
 
