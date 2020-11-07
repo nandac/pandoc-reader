@@ -217,8 +217,7 @@ class TestPandocReader(unittest.TestCase):
     def test_valid_content_with_toc(self):
         """Check if output returned is valid and table of contents is valid."""
         settings = get_settings(
-            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
-            PANDOC_ARGS=PANDOC_ARGS + ["--toc"]
+            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS, PANDOC_ARGS=PANDOC_ARGS + ["--toc"]
         )
 
         pandoc_reader = PandocReader(settings)
@@ -230,47 +229,45 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<p>This is some valid content that should pass.'
-                ' If it does not pass we will know something is wrong.</p>\n'
+                "<p>This is some valid content that should pass."
+                " If it does not pass we will know something is wrong.</p>\n"
                 '<h2 id="first-heading">First Heading</h2>\n'
-                '<p>This should be the first heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the first heading in my"
+                " table of contents.</p>\n"
                 '<h2 id="second-heading">Second Heading</h2>\n'
-                '<p>This should be the second heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the second heading in my"
+                " table of contents.</p>\n"
                 '<h3 id="first-subheading">First Subheading</h3>\n'
-                '<p>This is a subsection that should be shown as such'
-                ' in the table of contents.</p>\n'
+                "<p>This is a subsection that should be shown as such"
+                " in the table of contents.</p>\n"
                 '<h3 id="second-subheading">Second Subheading</h3>\n'
-                '<p>This is another subsection that should be shown as'
-                ' such in the table of contents.</p>\n'
+                "<p>This is another subsection that should be shown as"
+                " such in the table of contents.</p>\n"
             ),
-            output
+            output,
         )
-        self.assertEqual(
-            "Valid Content with Table of Contents", str(metadata["title"])
-        )
+        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
             '<nav id="TOC" role="doc-toc">\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-subheading">First Subheading</a></li>\n'
             '<li><a href="#second-subheading">Second Subheading</a></li>\n'
-            '</ul></li>\n'
-            '</ul>\n'
-            '</nav>\n',
-            str(metadata["toc"])
+            "</ul></li>\n"
+            "</ul>\n"
+            "</nav>\n",
+            str(metadata["toc"]),
         )
 
     def test_valid_content_with_toc_2(self):
         """Check if output returned is valid and table of contents is valid."""
         settings = get_settings(
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
-            PANDOC_ARGS=PANDOC_ARGS + ["--table-of-contents"]
+            PANDOC_ARGS=PANDOC_ARGS + ["--table-of-contents"],
         )
 
         pandoc_reader = PandocReader(settings)
@@ -282,40 +279,38 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<p>This is some valid content that should pass.'
-                ' If it does not pass we will know something is wrong.</p>\n'
+                "<p>This is some valid content that should pass."
+                " If it does not pass we will know something is wrong.</p>\n"
                 '<h2 id="first-heading">First Heading</h2>\n'
-                '<p>This should be the first heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the first heading in my"
+                " table of contents.</p>\n"
                 '<h2 id="second-heading">Second Heading</h2>\n'
-                '<p>This should be the second heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the second heading in my"
+                " table of contents.</p>\n"
                 '<h3 id="first-subheading">First Subheading</h3>\n'
-                '<p>This is a subsection that should be shown as such'
-                ' in the table of contents.</p>\n'
+                "<p>This is a subsection that should be shown as such"
+                " in the table of contents.</p>\n"
                 '<h3 id="second-subheading">Second Subheading</h3>\n'
-                '<p>This is another subsection that should be shown as'
-                ' such in the table of contents.</p>\n'
+                "<p>This is another subsection that should be shown as"
+                " such in the table of contents.</p>\n"
             ),
-            output
+            output,
         )
-        self.assertEqual(
-            "Valid Content with Table of Contents", str(metadata["title"])
-        )
+        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
             '<nav id="TOC" role="doc-toc">\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-subheading">First Subheading</a></li>\n'
             '<li><a href="#second-subheading">Second Subheading</a></li>\n'
-            '</ul></li>\n'
-            '</ul>\n'
-            '</nav>\n',
-            str(metadata["toc"])
+            "</ul></li>\n"
+            "</ul>\n"
+            "</nav>\n",
+            str(metadata["toc"]),
         )
 
     # Tests using default files
@@ -553,41 +548,38 @@ class TestPandocReader(unittest.TestCase):
 
         self.assertEqual(
             (
-                '<p>This is some valid content that should pass.'
-                ' If it does not pass we will know something is wrong.</p>\n'
+                "<p>This is some valid content that should pass."
+                " If it does not pass we will know something is wrong.</p>\n"
                 '<h2 id="first-heading">First Heading</h2>\n'
-                '<p>This should be the first heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the first heading in my"
+                " table of contents.</p>\n"
                 '<h2 id="second-heading">Second Heading</h2>\n'
-                '<p>This should be the second heading in my'
-                ' table of contents.</p>\n'
+                "<p>This should be the second heading in my"
+                " table of contents.</p>\n"
                 '<h3 id="first-subheading">First Subheading</h3>\n'
-                '<p>This is a subsection that should be shown as such'
-                ' in the table of contents.</p>\n'
+                "<p>This is a subsection that should be shown as such"
+                " in the table of contents.</p>\n"
                 '<h3 id="second-subheading">Second Subheading</h3>\n'
-                '<p>This is another subsection that should be shown as'
-                ' such in the table of contents.</p>\n'
+                "<p>This is another subsection that should be shown as"
+                " such in the table of contents.</p>\n"
             ),
-            output
+            output,
         )
-        self.assertEqual(
-            "Valid Content with Table of Contents",
-            str(metadata["title"])
-        )
+        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
             '<nav id="TOC" role="doc-toc">\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
-            '<ul>\n'
+            "<ul>\n"
             '<li><a href="#first-subheading">First Subheading</a></li>\n'
             '<li><a href="#second-subheading">Second Subheading</a></li>\n'
-            '</ul></li>\n'
-            '</ul>\n'
-            '</nav>\n',
-            str(metadata["toc"])
+            "</ul></li>\n"
+            "</ul>\n"
+            "</nav>\n",
+            str(metadata["toc"]),
         )
 
 

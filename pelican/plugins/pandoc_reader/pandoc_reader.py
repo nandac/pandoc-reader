@@ -99,7 +99,7 @@ class PandocReader(BaseReader):
             gen_toc_extra_args = [
                 "--standalone",
                 "--template",
-                os.path.join(TEMPLATES_PATH, TOC_TEMPLATE)
+                os.path.join(TEMPLATES_PATH, TOC_TEMPLATE),
             ]
 
             # Generate the table of contents
