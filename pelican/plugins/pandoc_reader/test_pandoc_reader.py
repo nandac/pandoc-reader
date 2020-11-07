@@ -250,7 +250,7 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav id="TOC" role="doc-toc">\n'
+            '<nav class="toc" role="doc-toc">\n'
             "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
@@ -300,7 +300,7 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav id="TOC" role="doc-toc">\n'
+            '<nav class="toc" role="doc-toc">\n'
             "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
@@ -569,7 +569,7 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav id="TOC" role="doc-toc">\n'
+            '<nav class="toc" role="doc-toc">\n'
             "<ul>\n"
             '<li><a href="#first-heading">First Heading</a></li>\n'
             '<li><a href="#second-heading">Second Heading</a>\n'
