@@ -1,4 +1,5 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
+import os
 import shutil
 import subprocess
 
@@ -7,6 +8,10 @@ from pelican.utils import pelican_open
 from yaml import safe_load
 
 from pelican import signals
+
+DIR_PATH = os.path.dirname(__file__)
+TEMPLATES_PATH = os.path.abspath(os.path.join(DIR_PATH, "templates"))
+TOC_TEMPLATE = "toc-template.html"
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
@@ -35,8 +40,9 @@ class PandocReader(BaseReader):
         with pelican_open(source_path) as file_content:
             content = file_content
 
-        # Parse YAML metadata
-        metadata = self._process_metadata(list(content.splitlines()))
+        generate_table_of_contents = False
+        metadata = ""
+        pandoc_cmd = []
 
         # Get arguments and extensions
         if not self.settings.get("PANDOC_DEFAULT_FILES"):
@@ -55,16 +61,63 @@ class PandocReader(BaseReader):
             ]
 
             self.check_arguments(arguments)
+
+            # Check if we should generate a table of contents
+            if "--toc" in arguments:
+                generate_table_of_contents = True
+            elif "--table-of-contents" in arguments:
+                generate_table_of_contents = True
+
             pandoc_cmd.extend(arguments)
         else:
             default_files_cmd = []
             for filepath in self.settings.get("PANDOC_DEFAULT_FILES"):
-                self.check_defaults(filepath)
-                default_files_cmd.append("--defaults={0}".format(filepath))
+                defaults = self.check_defaults(filepath)
 
+                # Check if we need to generate a table of contents
+                if not generate_table_of_contents:
+                    if defaults.get("table-of-contents", ""):
+                        generate_table_of_contents = True
+
+                default_files_cmd.append("--defaults={0}".format(filepath))
             # Construct Pandoc command
             pandoc_cmd = ["pandoc"] + default_files_cmd
 
+        # Generate HTML
+        output = self.run_pandoc(pandoc_cmd, content)
+
+        # Replace all occurrences of %7Bstatic%7D to {static},
+        # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
+        # so that static links are resolvable by pelican
+        for encoded_str, raw_str in ENCODED_LINKS_TO_RAW_LINKS_MAP.items():
+            output = output.replace(encoded_str, raw_str)
+
+        # Generate a table of contents if the variable below was set to true
+        if generate_table_of_contents:
+            # The table of contents is generated using a template which
+            # takes effect only in standalone mode
+            gen_toc_extra_args = [
+                "--standalone",
+                "--template",
+                os.path.join(TEMPLATES_PATH, TOC_TEMPLATE)
+            ]
+
+            # Generate the table of contents
+            pandoc_gen_toc_cmd = pandoc_cmd + gen_toc_extra_args
+            table_of_contents = self.run_pandoc(pandoc_gen_toc_cmd, content)
+
+            # Parse YAML metadata and add the table of contents to the metadata
+            metadata = self._process_metadata(
+                list(content.splitlines()), table_of_contents
+            )
+        else:
+            # Parse YAML metadata
+            metadata = self._process_metadata(list(content.splitlines()))
+
+        return output, metadata
+
+    @staticmethod
+    def run_pandoc(pandoc_cmd, content):
         # Execute Pandoc command
         proc = subprocess.Popen(
             pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
@@ -75,14 +128,7 @@ class PandocReader(BaseReader):
         status = proc.wait()
         if status:
             raise subprocess.CalledProcessError(status, pandoc_cmd)
-
-        # Replace all occurrences of %7Bstatic%7D to {static},
-        # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
-        # so that static links are resolvable by pelican
-        for encoded_str, raw_str in ENCODED_LINKS_TO_RAW_LINKS_MAP.items():
-            output = output.replace(encoded_str, raw_str)
-
-        return output, metadata
+        return output
 
     @staticmethod
     def check_arguments(arguments):
@@ -161,8 +207,9 @@ class PandocReader(BaseReader):
             and to_output not in VALID_OUTPUT_FORMATS
         ):
             raise ValueError("Output format type must be html or html5.")
+        return defaults
 
-    def _process_metadata(self, text):
+    def _process_metadata(self, text, table_of_contents=""):
         """Process YAML metadata and export."""
         metadata = {}
 
@@ -192,6 +239,10 @@ class PandocReader(BaseReader):
             if len(metalist) == 2:
                 key, value = metalist[0].lower(), metalist[1].strip().strip('"')
                 metadata[key] = self.process_metadata(key, value)
+
+        # Add the table of contents to the metadata
+        if table_of_contents:
+            metadata["toc"] = table_of_contents
         return metadata
 
 
