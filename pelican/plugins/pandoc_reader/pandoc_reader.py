@@ -22,6 +22,7 @@ ENCODED_LINKS_TO_RAW_LINKS_MAP = {
 VALID_INPUT_FORMATS = ("markdown", "commonmark", "gfm")
 VALID_OUTPUT_FORMATS = ("html", "html5")
 UNSUPPORTED_ARGUMENTS = ("--standalone", "--self-contained")
+VALID_BIB_EXTENSIONS = ["json", "yaml", "bibtex", "bib"]
 
 
 class PandocReader(BaseReader):
@@ -62,6 +63,12 @@ class PandocReader(BaseReader):
 
             self.check_arguments(arguments)
 
+            # Create bibliography
+            if "--citeproc" in arguments and "+citation" in extensions:
+                bib_files = self.find_bibs(source_path)
+                for bib_file in bib_files:
+                    pandoc_cmd = pandoc_cmd + ["--bibliography", bib_file]
+
             # Check if we should generate a table of contents
             if "--toc" in arguments:
                 generate_table_of_contents = True
@@ -72,7 +79,13 @@ class PandocReader(BaseReader):
         else:
             default_files_cmd = []
             for filepath in self.settings.get("PANDOC_DEFAULT_FILES"):
-                defaults = self.check_defaults(filepath)
+                defaults, reader = self.check_defaults(filepath)
+
+                if defaults.get("citeproc", "") and "+citations" in reader:
+                    bib_files = self.find_bibs(source_path)
+                    for bib_file in bib_files:
+                        default_files_cmd.append("--bibliography")
+                        default_files_cmd.append(bib_file)
 
                 # Check if we need to generate a table of contents
                 if not generate_table_of_contents:
@@ -80,6 +93,7 @@ class PandocReader(BaseReader):
                         generate_table_of_contents = True
 
                 default_files_cmd.append("--defaults={0}".format(filepath))
+
             # Construct Pandoc command
             pandoc_cmd = ["pandoc"] + default_files_cmd
 
@@ -117,7 +131,21 @@ class PandocReader(BaseReader):
         return output, metadata
 
     @staticmethod
+    def find_bibs(source_path):
+        """Find bibliographies in the directory of the sourcepath given."""
+        bib_files = []
+        filename = os.path.splitext(os.path.basename(source_path))[0]
+        directory_path = os.path.dirname(os.path.abspath(source_path))
+        for root, dir, files in os.walk(directory_path):
+            for extension in VALID_BIB_EXTENSIONS:
+                bib_name = ".".join([filename, extension])
+                if bib_name in files:
+                    bib_files.append(os.path.join(root, bib_name))
+        return bib_files
+
+    @staticmethod
     def run_pandoc(pandoc_cmd, content):
+        """Execute the given pandoc command and return output."""
         # Execute Pandoc command
         proc = subprocess.Popen(
             pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
@@ -157,6 +185,7 @@ class PandocReader(BaseReader):
         if self_contained:
             raise ValueError("The default self-contained should be set to false.")
 
+        reader = ""
         reader_input = defaults.get("reader", "")
         from_input = defaults.get("from", "")
 
@@ -171,6 +200,7 @@ class PandocReader(BaseReader):
             # Check to see if the reader_prefix matches a valid input type
             if not reader_prefix.startswith(VALID_INPUT_FORMATS):
                 raise ValueError("Input type has to be a markdown variant.")
+            reader = reader_input
 
         # Case where from is specified
         if not reader_input and from_input:
@@ -179,6 +209,7 @@ class PandocReader(BaseReader):
             # Check to see if the reader_prefix matches a valid input type
             if not reader_prefix.startswith(VALID_INPUT_FORMATS):
                 raise ValueError("Input type has to be a markdown variant.")
+            reader = from_input
 
         # Case where both reader and from are specified which is not supported
         if reader_input and from_input:
@@ -207,7 +238,7 @@ class PandocReader(BaseReader):
             and to_output not in VALID_OUTPUT_FORMATS
         ):
             raise ValueError("Output format type must be html or html5.")
-        return defaults
+        return defaults, reader
 
     def _process_metadata(self, text, table_of_contents=""):
         """Process YAML metadata and export."""
