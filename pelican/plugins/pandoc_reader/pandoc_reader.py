@@ -27,26 +27,30 @@ FILE_EXTENSIONS = ["md", "markdown", "mkd", "mdown"]
 
 
 class PandocReader(BaseReader):
-    """Process files written in Pandoc Markdown."""
+    """Convert files written in Pandoc Markdown to HTML 5."""
 
     enabled = True
     file_extensions = FILE_EXTENSIONS
 
     def read(self, source_path):
-        """Parse Pandoc Markdown and return HTML 5 output and metadata."""
+        """Parse Pandoc Markdown and return HTML5 markup and metadata."""
         # Check if pandoc is installed and is executable
         if not shutil.which("pandoc"):
             raise Exception("Could not find Pandoc. Please install.")
 
+        # Open markdown file and read content
         content = ""
         with pelican_open(source_path) as file_content:
             content = file_content
 
+        # Retrieve HTML content and metadata
         output, metadata = self.create_html(source_path, content)
 
         return output, metadata
 
     def create_html(self, source_path, content):
+        """Creates HTML5 content and takes care of citations and toc."""
+        # Get settings set in pelicanconf.py
         default_files = self.settings.get("PANDOC_DEFAULT_FILES", [])
         arguments = self.settings.get("PANDOC_ARGS", [])
         extensions = self.settings.get("PANDOC_EXTENSIONS", [])
@@ -111,7 +115,7 @@ class PandocReader(BaseReader):
 
     @staticmethod
     def check_if_citations(arguments, extensions):
-        """Check if citations is selected."""
+        """Check if citations are specified."""
         citations = False
         if arguments and extensions:
             if "--citeproc" in arguments and "+citation" in extensions:
@@ -120,7 +124,7 @@ class PandocReader(BaseReader):
 
     @staticmethod
     def check_if_toc(arguments):
-        # Check if we should generate a table of contents
+        """Check if a table of contents should be generated."""
         table_of_contents = False
         if arguments:
             if "--toc" in arguments or "--table-of-contents" in arguments:
@@ -129,7 +133,7 @@ class PandocReader(BaseReader):
 
     @staticmethod
     def find_bibs(source_path):
-        """Find bibliographies in the directory of the sourcepath given."""
+        """Find bibliographies recursively in the sourcepath given."""
         bib_files = []
         filename = os.path.splitext(os.path.basename(source_path))[0]
         directory_path = os.path.dirname(os.path.abspath(source_path))
@@ -143,17 +147,15 @@ class PandocReader(BaseReader):
     @staticmethod
     def run_pandoc(pandoc_cmd, content):
         """Execute the given pandoc command and return output."""
-        # Execute Pandoc command
-        proc = subprocess.Popen(
-            pandoc_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+        output = subprocess.run(
+            pandoc_cmd,
+            input=content,
+            capture_output=True,
+            encoding="UTF-8",
+            check=True
         )
-
-        # retrieve HTML 5 output
-        output = proc.communicate(content.encode("UTF-8"))[0].decode("UTF-8")
-        status = proc.wait()
-        if status:
-            raise subprocess.CalledProcessError(status, pandoc_cmd)
-        return output
+        rendered_html = output.stdout
+        return rendered_html
 
     @staticmethod
     def check_arguments(arguments):
@@ -164,7 +166,6 @@ class PandocReader(BaseReader):
 
     def check_defaults(self, default_files):
         """Check if the given Pandoc defaults file has valid values."""
-
         citations = False
         table_of_contents = False
         for default_file in default_files:
@@ -191,7 +192,6 @@ class PandocReader(BaseReader):
     @staticmethod
     def check_if_unsupported_settings(defaults):
         """Check if unsupported settings are specified in the defaults."""
-
         for arg in UNSUPPORTED_ARGUMENTS:
             arg = arg[2:]
             if defaults.get(arg, ""):
@@ -199,6 +199,7 @@ class PandocReader(BaseReader):
 
     @staticmethod
     def check_input_format(defaults):
+        """Check if the input format given is a Markdown variant."""
         reader = ""
         reader_input = defaults.get("reader", "")
         from_input = defaults.get("from", "")
@@ -208,14 +209,15 @@ class PandocReader(BaseReader):
             raise ValueError("No input format specified.")
 
         # Case where both reader and from are specified which is not supported
-        elif reader_input and from_input:
+        if reader_input and from_input:
             raise ValueError(
                 (
                     "Specifying both from and reader is not supported."
                     " Please specify just one."
                 )
             )
-        elif reader_input or from_input:
+
+        if reader_input or from_input:
             if reader_input:
                 reader = reader_input
             elif from_input:
@@ -230,6 +232,7 @@ class PandocReader(BaseReader):
 
     @staticmethod
     def check_output_format(defaults):
+        """Check if the output format is HTML or HTML5."""
         writer_output = defaults.get("writer", "")
         to_output = defaults.get("to", "")
 
@@ -248,7 +251,7 @@ class PandocReader(BaseReader):
             and to_output not in VALID_OUTPUT_FORMATS
         ):
             output_formats = " or ".join(VALID_OUTPUT_FORMATS)
-            raise ValueError("Output format type must be {}.".format(output_formats))
+            raise ValueError("Output format type must be either {}.".format(output_formats))
 
     def _process_metadata(self, text, table_of_contents=None):
         """Process YAML metadata and export."""
