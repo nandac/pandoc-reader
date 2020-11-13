@@ -148,11 +148,7 @@ class PandocReader(BaseReader):
     def run_pandoc(pandoc_cmd, content):
         """Execute the given pandoc command and return output."""
         output = subprocess.run(
-            pandoc_cmd,
-            input=content,
-            capture_output=True,
-            encoding="UTF-8",
-            check=True
+            pandoc_cmd, input=content, capture_output=True, encoding="UTF-8", check=True
         )
         rendered_html = output.stdout
         return rendered_html
@@ -251,7 +247,9 @@ class PandocReader(BaseReader):
             and to_output not in VALID_OUTPUT_FORMATS
         ):
             output_formats = " or ".join(VALID_OUTPUT_FORMATS)
-            raise ValueError("Output format type must be either {}.".format(output_formats))
+            raise ValueError(
+                "Output format type must be either {}.".format(output_formats)
+            )
 
     def _process_metadata(self, text, table_of_contents=None):
         """Process YAML metadata and export."""
