@@ -80,7 +80,7 @@ class PandocReader(BaseReader):
         if citations:
             bib_files = self.find_bibs(source_path)
             for bib_file in bib_files:
-                pandoc_cmd = pandoc_cmd + ["--bibliography", bib_file]
+                pandoc_cmd.append("--bibliography={0}".format(bib_file))
 
         # Create HTML content
         output = self.run_pandoc(pandoc_cmd, content)
@@ -118,7 +118,9 @@ class PandocReader(BaseReader):
         """Check if citations are specified."""
         citations = False
         if arguments and extensions:
-            if "--citeproc" in arguments and "+citation" in extensions:
+            if (
+                "--citeproc" in arguments or "-C" in arguments
+            ) and "+citations" in extensions:
                 citations = True
         return citations
 
