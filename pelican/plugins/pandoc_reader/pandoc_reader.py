@@ -101,6 +101,14 @@ class PandocReader(BaseReader):
 
         return output, metadata
 
+     @staticmethod
+    def run_pandoc(pandoc_cmd, content):
+        """Execute the given pandoc command and return output."""
+        output = subprocess.run(
+            pandoc_cmd, input=content, capture_output=True, encoding="UTF-8", check=True
+        )
+        return output.stdout
+
     def create_toc(self, pandoc_cmd, content):
         """Generate table of contents."""
         toc_args = [
@@ -112,6 +120,42 @@ class PandocReader(BaseReader):
         pandoc_cmd = pandoc_cmd + toc_args
         table_of_contents = self.run_pandoc(pandoc_cmd, content)
         return table_of_contents
+
+    def _process_metadata(self, text, table_of_contents=None):
+        """Process YAML metadata and export."""
+        metadata = {}
+
+        # Check that the given text is not empty
+        if not text:
+            raise Exception("Could not find metadata. File is empty.")
+
+        # Check that the first line of the file starts with a YAML header
+        if text[0].strip() not in ["---", "..."]:
+            raise Exception("Could not find metadata header '...' or '---'.")
+
+        # Find the end of the YAML block
+        lines = text[1:]
+        yaml_end = ""
+        for line_num, line in enumerate(lines):
+            if line.strip() in ["---", "..."]:
+                yaml_end = line_num
+                break
+
+        # Check if the end of the YAML block was found
+        if not yaml_end:
+            raise Exception("Could not find end of metadata block.")
+
+        # Process the YAML block
+        for line in lines[:yaml_end]:
+            metalist = line.split(":", 1)
+            if len(metalist) == 2:
+                key, value = metalist[0].lower(), metalist[1].strip().strip('"')
+                metadata[key] = self.process_metadata(key, value)
+
+        # Add the table of contents as a metadata field
+        if table_of_contents:
+            metadata["toc"] = self.process_metadata("toc", table_of_contents)
+        return metadata
 
     @staticmethod
     def check_if_citations(arguments, extensions):
@@ -145,15 +189,6 @@ class PandocReader(BaseReader):
                 if bib_name in files:
                     bib_files.append(os.path.join(root, bib_name))
         return bib_files
-
-    @staticmethod
-    def run_pandoc(pandoc_cmd, content):
-        """Execute the given pandoc command and return output."""
-        output = subprocess.run(
-            pandoc_cmd, input=content, capture_output=True, encoding="UTF-8", check=True
-        )
-        rendered_html = output.stdout
-        return rendered_html
 
     @staticmethod
     def check_arguments(arguments):
@@ -253,41 +288,7 @@ class PandocReader(BaseReader):
                 "Output format type must be either {}.".format(output_formats)
             )
 
-    def _process_metadata(self, text, table_of_contents=None):
-        """Process YAML metadata and export."""
-        metadata = {}
 
-        # Check that the given text is not empty
-        if not text:
-            raise Exception("Could not find metadata. File is empty.")
-
-        # Check that the first line of the file starts with a YAML header
-        if text[0].strip() not in ["---", "..."]:
-            raise Exception("Could not find metadata header '...' or '---'.")
-
-        # Find the end of the YAML block
-        lines = text[1:]
-        yaml_end = ""
-        for line_num, line in enumerate(lines):
-            if line.strip() in ["---", "..."]:
-                yaml_end = line_num
-                break
-
-        # Check if the end of the YAML block was found
-        if not yaml_end:
-            raise Exception("Could not find end of metadata block.")
-
-        # Process the YAML block
-        for line in lines[:yaml_end]:
-            metalist = line.split(":", 1)
-            if len(metalist) == 2:
-                key, value = metalist[0].lower(), metalist[1].strip().strip('"')
-                metadata[key] = self.process_metadata(key, value)
-
-        # Add the table of contents as a metadata field
-        if table_of_contents:
-            metadata["toc"] = self.process_metadata("toc", table_of_contents)
-        return metadata
 
 
 def add_reader(readers):
