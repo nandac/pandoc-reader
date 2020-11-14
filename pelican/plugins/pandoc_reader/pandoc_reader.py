@@ -101,7 +101,7 @@ class PandocReader(BaseReader):
 
         return output, metadata
 
-     @staticmethod
+    @staticmethod
     def run_pandoc(pandoc_cmd, content):
         """Execute the given pandoc command and return output."""
         output = subprocess.run(
@@ -287,8 +287,6 @@ class PandocReader(BaseReader):
             raise ValueError(
                 "Output format type must be either {}.".format(output_formats)
             )
-
-
 
 
 def add_reader(readers):
