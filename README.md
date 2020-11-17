@@ -21,6 +21,8 @@ This package has been tested using the following versions of the above dependenc
 * Pandoc 2.11.0
 * PyYAML 5.3.1
 
+Earlier versions of these dependencies will not be supported.
+
 ## Installation
 
 The plugin may be installed using pip:
@@ -61,7 +63,7 @@ More information about Pelican's predefined metadata is available [here](https:/
 
 ### Specifying Pandoc Options
 
-The plugin supports two methods to pass options to Pandoc and are **mutually exclusive**. These methods are described in the sections below.
+The plugin supports two methods to pass options to Pandoc that are **mutually exclusive**. These methods are described in the sections below.
 
 #### Method One: Using Settings in `pelicanconf.py`
 
@@ -70,7 +72,7 @@ The first method involves configuring two settings in your `pelicanconf.py` file
 * `PANDOC_ARGS`
 * `PANDOC_EXTENSIONS`
 
-In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc ah shown below:
+In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -142,9 +144,9 @@ The table of contents will be available for use in templates using the `{{ artic
 
 ### Citation Support
 
-Assuming you are using Pandoc >= 2.11 --which has in-built support for citations-- you may enable them by specifying the `citations` extension and the `-C` or `--citeproc` option.
+You may enable citations for your posts or pages by specifying the `citations` extension and the `-C` or `--citeproc` option.
 
-Set `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below:
+Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -187,7 +189,7 @@ You **must** place the citations file in the same directory that your blog resid
 
 ### Known Issues
 
-Articles can take several seconds to be converted to HTML if linking to a Citation Style Language (CSL) specification using a URL as shown below:
+The posts and pages of your site can take several seconds to be converted to HTML, if linking to a Citation Style Language (CSL) specification using a URL, as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -201,7 +203,9 @@ or
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-This is due to the need to download the CSL specification for every post individually which causes the slowdown. We therefore, recommend downloading the CSL specification locally to your machine/webserver, and linking to a local file instead. This speeds up processing time by 10x.
+This is due to the need to download the CSL specification for every post or page each time which causing very long processing times.
+
+Therefore, we recommend downloading the CSL specification to your machine or webserver, and giving the `csl` argument a relative path to the file. This speeds up processing time by 10x.
 
 ## Contributing
 
