@@ -1,4 +1,5 @@
 """Reader that processes Pandoc Markdown and returns HTML 5."""
+import math
 import os
 import shutil
 import subprocess
@@ -10,8 +11,10 @@ from yaml import safe_load
 from pelican import signals
 
 DIR_PATH = os.path.dirname(__file__)
+LUA_FILTERS_PATH = os.path.abspath(os.path.join(DIR_PATH, "filters"))
 TEMPLATES_PATH = os.path.abspath(os.path.join(DIR_PATH, "templates"))
 TOC_TEMPLATE = "toc-template.html"
+LUA_WORDCOUNT_FILTER = "wordcount.lua"
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
@@ -24,6 +27,7 @@ VALID_OUTPUT_FORMATS = ("html", "html5")
 UNSUPPORTED_ARGUMENTS = ("--standalone", "--self-contained")
 VALID_BIB_EXTENSIONS = ["json", "yaml", "bibtex", "bib"]
 FILE_EXTENSIONS = ["md", "markdown", "mkd", "mdown"]
+WORDS_PER_MINUTE = 200
 
 
 class PandocReader(BaseReader):
@@ -54,6 +58,7 @@ class PandocReader(BaseReader):
         default_files = self.settings.get("PANDOC_DEFAULT_FILES", [])
         arguments = self.settings.get("PANDOC_ARGS", [])
         extensions = self.settings.get("PANDOC_EXTENSIONS", [])
+        calc_reading_time = self.settings.get("PANDOC_CALC_READING_TIME", [])
 
         if isinstance(extensions, list):
             extensions = "".join(extensions)
@@ -96,8 +101,15 @@ class PandocReader(BaseReader):
         if table_of_contents:
             toc = self.create_toc(pandoc_cmd, content)
 
+        # Calculate reading time in minutes
+        reading_time = None
+        if calc_reading_time:
+            reading_time = self.calculate_reading_time(content)
+
         # Parse YAML metadata and add the table of contents to the metadata
-        metadata = self._process_metadata(list(content.splitlines()), toc)
+        metadata = self._process_metadata(
+            list(content.splitlines()), pandoc_cmd, toc, reading_time
+        )
 
         return output, metadata
 
@@ -121,7 +133,21 @@ class PandocReader(BaseReader):
         table_of_contents = self.run_pandoc(pandoc_cmd, content)
         return table_of_contents
 
-    def _process_metadata(self, text, table_of_contents=None):
+    def calculate_reading_time(self, content):
+        """Calculate time taken to read content."""
+        pandoc_cmd = [
+            "pandoc",
+            "--lua-filter",
+            os.path.join(LUA_FILTERS_PATH, LUA_WORDCOUNT_FILTER),
+        ]
+        output = self.run_pandoc(pandoc_cmd, content)
+        wordcount = output.split()[0]
+        reading_time = str(math.ceil(float(wordcount) / float(WORDS_PER_MINUTE)))
+        return reading_time
+
+    def _process_metadata(
+        self, text, pandoc_cmd, table_of_contents=None, reading_time=None
+    ):
         """Process YAML metadata and export."""
         metadata = {}
 
@@ -150,11 +176,21 @@ class PandocReader(BaseReader):
             metalist = line.split(":", 1)
             if len(metalist) == 2:
                 key, value = metalist[0].lower(), metalist[1].strip().strip('"')
+                # Takes care of metadata fields that should be converted to HTML
+                if key in self.settings["FORMATTED_FIELDS"]:
+                    value = self.run_pandoc(pandoc_cmd, value)
                 metadata[key] = self.process_metadata(key, value)
 
         # Add the table of contents as a metadata field
         if table_of_contents:
             metadata["toc"] = self.process_metadata("toc", table_of_contents)
+
+        # Add reading time in minutes
+        if reading_time:
+            metadata["reading_time"] = self.process_metadata(
+                "reading_time", reading_time
+            )
+
         return metadata
 
     @staticmethod

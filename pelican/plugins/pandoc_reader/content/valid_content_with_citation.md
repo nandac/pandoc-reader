@@ -2,6 +2,7 @@
 title: Valid Content With Citation
 author: My Author
 date: 2020-10-16
+summary: "But this foundational principle of science has now been called into question by [String Theory](https://www.britannica.com/science/string-theory)."
 ---
 ## String Theory
 

@@ -13,6 +13,8 @@ DEFAULTS_PATH = os.path.abspath(os.path.join(DIR_PATH, "defaults"))
 # Test settings that will be set in pelicanconf.py by plugin users
 PANDOC_ARGS = ["--mathjax"]
 PANDOC_EXTENSIONS = ["+smart", "+implicit_figures"]
+PANDOC_CALC_READING_TIME = True
+FORMATTED_FIELDS = ["summary"]
 
 
 class TestPandocReader(unittest.TestCase):
@@ -325,6 +327,7 @@ class TestPandocReader(unittest.TestCase):
                 "--metadata=link-citations:false",
                 "--metadata=reference-section-title:References",
             ],
+            FORMATTED_FIELDS=FORMATTED_FIELDS,
         )
 
         pandoc_reader = PandocReader(settings)
@@ -421,6 +424,10 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual(
             '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
             str(metadata["toc"]),
+        )
+        self.assertEqual(
+            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            str(metadata["summary"]),
         )
 
     def test_citations_and_toc_2(self):
@@ -435,6 +442,7 @@ class TestPandocReader(unittest.TestCase):
                 "--metadata=link-citations:false",
                 "--metadata=reference-section-title:References",
             ],
+            FORMATTED_FIELDS=FORMATTED_FIELDS,
         )
 
         pandoc_reader = PandocReader(settings)
@@ -531,6 +539,10 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual(
             '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
             str(metadata["toc"]),
+        )
+        self.assertEqual(
+            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            str(metadata["summary"]),
         )
 
     # Tests using default files
@@ -809,7 +821,11 @@ class TestPandocReader(unittest.TestCase):
             os.path.join(DEFAULTS_PATH, "valid_defaults_with_toc_and_citations.yaml")
         ]
 
-        settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
+        settings = get_settings(
+            PANDOC_DEFAULT_FILES=pandoc_default_files,
+            PANDOC_CALC_READING_TIME=PANDOC_CALC_READING_TIME,
+            FORMATTED_FIELDS=FORMATTED_FIELDS,
+        )
         pandoc_reader = PandocReader(settings)
 
         source_path = os.path.join(CONTENT_PATH, "valid_content_with_citation.md")
@@ -906,6 +922,11 @@ class TestPandocReader(unittest.TestCase):
             '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
             str(metadata["toc"]),
         )
+        self.assertEqual(
+            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            str(metadata["summary"]),
+        )
+        self.assertEqual("1", str(metadata["reading_time"]))
 
 
 if __name__ == "__main__":
