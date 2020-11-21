@@ -1,4 +1,5 @@
 """Tests for pandoc-reader plugin."""
+# pylint: disable=too-many-lines
 import os
 import shutil
 import unittest
@@ -17,8 +18,8 @@ PANDOC_CALC_READING_TIME = True
 FORMATTED_FIELDS = ["summary"]
 
 
-class TestPandocReader(unittest.TestCase):
-    """Test class for pandoc-reader plugin."""
+class TestPandocInstallation(unittest.TestCase):
+    """Test installation of Pandoc."""
 
     # Test using pelicanconf settings variables
     def test_pandoc_installed(self):
@@ -41,6 +42,10 @@ class TestPandocReader(unittest.TestCase):
             # Case where pandoc is installed
             message = "Pandoc is installed."
             self.assertEqual("Pandoc is installed.", message)
+
+
+class TestInvalidCasesWithArguments(unittest.TestCase):
+    """Invalid test cases using Pandoc arguments and extensions."""
 
     def test_empty_file(self):
         """Check if a file is empty."""
@@ -72,9 +77,11 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("Could not find metadata header '...' or '---'.", message)
+        self.assertEqual(
+            "Could not find metadata header '...' or '---'.", message
+        )
 
-    def test_metadata_block_end(self):
+    def test_no_metadata_block_end(self):
         """Check if the metadata block ends."""
         settings = get_settings(
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS, PANDOC_ARGS=PANDOC_ARGS
@@ -136,7 +143,13 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("Argument --self-contained is not supported.", message)
+        self.assertEqual(
+            "Argument --self-contained is not supported.", message
+        )
+
+
+class TestValidCasesWithArguments(unittest.TestCase):
+    """Valid test cases using Pandoc arguments and extensions."""
 
     def test_valid_file(self):
         """Check if we get the appropriate output for valid input."""
@@ -190,11 +203,13 @@ class TestPandocReader(unittest.TestCase):
         )
 
         pandoc_reader = PandocReader(settings)
-        source_path = os.path.join(CONTENT_PATH, "valid_content_with_raw_paths.md")
+        source_path = os.path.join(
+            CONTENT_PATH, "valid_content_with_raw_paths.md"
+        )
         output, metadata = pandoc_reader.read(source_path)
 
         # Setting this so that assert is able to execute the difference
-        self.maxDiff = None
+        self.maxDiff = None  # pylint: disable=invalid-name
 
         self.assertEqual(
             (
@@ -219,7 +234,8 @@ class TestPandocReader(unittest.TestCase):
     def test_valid_content_with_toc(self):
         """Check if output returned is valid and table of contents is valid."""
         settings = get_settings(
-            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS, PANDOC_ARGS=PANDOC_ARGS + ["--toc"]
+            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
+            PANDOC_ARGS=PANDOC_ARGS + ["--toc"],
         )
 
         pandoc_reader = PandocReader(settings)
@@ -248,7 +264,9 @@ class TestPandocReader(unittest.TestCase):
             ),
             output,
         )
-        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
+        self.assertEqual(
+            "Valid Content with Table of Contents", str(metadata["title"])
+        )
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
@@ -298,7 +316,9 @@ class TestPandocReader(unittest.TestCase):
             ),
             output,
         )
-        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
+        self.assertEqual(
+            "Valid Content with Table of Contents", str(metadata["title"])
+        )
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
@@ -331,9 +351,10 @@ class TestPandocReader(unittest.TestCase):
         )
 
         pandoc_reader = PandocReader(settings)
-        source_path = os.path.join(CONTENT_PATH, "valid_content_with_citation.md")
+        source_path = os.path.join(
+            CONTENT_PATH, "valid_content_with_citation.md"
+        )
         output, metadata = pandoc_reader.read(source_path)
-
         self.maxDiff = None
 
         self.assertEqual(
@@ -341,76 +362,111 @@ class TestPandocReader(unittest.TestCase):
                 '<h2 id="string-theory">String Theory</h2>\n'
                 "<p>But this foundational principle of science has"
                 " now been called into question by"
-                ' <a href="https://www.britannica.com/science/string-theory">String Theory</a>,'
+                ' <a href="https://www.britannica.com/science/'
+                'string-theory">String Theory</a>,'
                 " which is a relative newcomer to theoretical physics, but one"
-                " that has captured the common imagination, judging by the popular"
-                " explanations that abound on the Web"
-                ' <span class="citation" data-cites="mann2019 wood2019 jones2020">[1]–[3]</span>.'
+                " that has captured the common imagination, judging by"
+                " the popular explanations that abound on the Web"
+                ' <span class="citation" data-cites="mann2019 wood2019'
+                ' jones2020">[1]–[3]</span>.'
                 " And whether string theory is or is not science, Popper"
                 " notwithstanding, is an issue that is still up for debate"
                 " <span"
                 ' class="citation" data-cites="siegel2015 castelvecchi2016'
                 ' alves2017 francis2019">[4]–[7]</span>.</p>\n'
                 '<h1 class="unnumbered" id="bibliography">References</h1>\n'
-                '<div id="refs" class="references csl-bib-body" role="doc-bibliography">\n'
-                '<div id="ref-mann2019" class="csl-entry" role="doc-biblioentry">\n'
+                '<div id="refs" class="references csl-bib-body"'
+                ' role="doc-bibliography">\n'
+                '<div id="ref-mann2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
                 '<div class="csl-left-margin">[1]'
                 ' </div><div class="csl-right-inline">A. Mann,'
-                " <span>“<span>What Is String Theory?</span>”</span> 20-Mar-2019. [Online]."
-                ' Available: <a href="https://www.livescience.com/65033-what-is-string-theory.html">'
-                "https://www.livescience.com/65033-what-is-string-theory.html</a>."
+                " <span>“<span>What Is String Theory?</span>”</span>"
+                " 20-Mar-2019. [Online]."
+                ' Available: <a href="https://www.livescience.com/'
+                '65033-what-is-string-theory.html">'
+                "https://www.livescience.com/"
+                "65033-what-is-string-theory.html</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-wood2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[2] </div><div class="csl-right-inline">'
-                "C. Wood, <span>“<span>What Is String Theory?</span>. Reference article:"
-                " A simplified explanation and brief history of string theory,”</span> 11-Jul-2019."
-                ' [Online]. Available: <a href="https://www.space.com/17594-string-theory.html">'
-                "https://www.space.com/17594-string-theory.html</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-wood2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[2] </div>'
+                '<div class="csl-right-inline">'
+                "C. Wood, <span>“<span>What Is String Theory?</span>."
+                " Reference article:"
+                " A simplified explanation and brief history of string"
+                " theory,”</span> 11-Jul-2019."
+                ' [Online]. Available: <a href="https://www.space.com/'
+                '17594-string-theory.html">'
+                "https://www.space.com/17594-string-theory.html</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-jones2020" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[3] </div><div class="csl-right-inline">'
+                '<div id="ref-jones2020" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[3]'
+                ' </div><div class="csl-right-inline">'
                 'A. Z. Jones, <span>“<span class="nocase">The Basics of String'
                 " Theory</span>,”</span> 02-Mar-2019. [Online]. Available:"
-                ' <a href="https://www.thoughtco.com/what-is-string-theory-2699363">'
-                "https://www.thoughtco.com/what-is-string-theory-2699363</a>. [Accessed: 12-Nov-2020]</div>\n"
+                ' <a href="https://www.thoughtco.com/'
+                'what-is-string-theory-2699363">'
+                "https://www.thoughtco.com/what-is-string-theory-2699363</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-siegel2015" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[4] </div><div class="csl-right-inline">'
+                '<div id="ref-siegel2015" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[4]'
+                ' </div><div class="csl-right-inline">'
                 "E. Siegel, <span>“<span>Why String Theory Is Not A Scientific"
                 " Theory</span>,”</span> 23-Dec-2015. [Online]. Available:"
                 " <a"
-                ' href="https://www.forbes.com/sites/startswithabang/2015/12/23/'
-                'why-string-theory-is-not-science/">https://www.forbes.com/sites/'
-                "startswithabang/2015/12/23/why-string-theory-is-not-science/</a>."
+                ' href="https://www.forbes.com/sites/'
+                "startswithabang/2015/12/23/"
+                'why-string-theory-is-not-science/">https://www.forbes.com/'
+                "sites/startswithabang/2015/12/23/"
+                "why-string-theory-is-not-science/</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-castelvecchi2016" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[5] </div><div class="csl-right-inline">'
-                'D. Castelvecchi, <span>“<span class="nocase">Feuding physicists turn'
-                " to philosophy for help</span>. String theory is at the heart of"
-                " a debate over the integrity of the scientific method itself,”"
-                "</span> 05-Jan-2016. [Online]. Available:"
-                ' <a href="https://www.nature.com/news/feuding-physicists-turn-to-philosophy-'
-                'for-help-1.19076">https://www.nature.com/news/feuding-physicists-turn-to-philosophy'
-                "-for-help-1.19076</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-castelvecchi2016" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[5]'
+                ' </div><div class="csl-right-inline">'
+                'D. Castelvecchi, <span>“<span class="nocase">'
+                "Feuding physicists turn"
+                " to philosophy for help</span>. String theory is at the"
+                " heart of a debate over the integrity of the scientific"
+                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                ' <a href="https://www.nature.com/news/'
+                'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
+                "https://www.nature.com/news/"
+                "feuding-physicists-turn-to-philosophy-for-help-1.19076</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-alves2017" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[6] </div><div class="csl-right-inline">'
+                '<div id="ref-alves2017" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[6] </div>'
+                '<div class="csl-right-inline">'
                 'R. A. Batista and J. Primack, <span>“<span class="nocase">'
                 "Is String theory falsifiable?</span>. Can a theory that isn’t"
-                " completely testable still be useful to physics?”</span> [Online]."
-                ' Available: <a href="https://metafact.io/factchecks/30-is-string-'
-                'theory-falsifiable">https://metafact.io/factchecks/30-is-string-'
-                "theory-falsifiable</a>. [Accessed: 12-Nov-2020]</div>\n"
+                " completely testable still be useful to physics?”</span>"
+                " [Online]."
+                ' Available: <a href="https://metafact.io/factchecks/'
+                '30-is-string-theory-falsifiable">'
+                "https://metafact.io/factchecks/"
+                "30-is-string-theory-falsifiable</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-francis2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[7] </div><div class="csl-right-inline">'
+                '<div id="ref-francis2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[7]'
+                ' </div><div class="csl-right-inline">'
                 'M. R. Francis, <span>“<span class="nocase">Falsifiability and'
-                " physics</span>. Can a theory that isn’t completely testable still"
-                " be useful to physics?”</span> 23-Apr-2019. [Online]. Available:"
-                ' <a href="https://www.scientificamerican.com/article/is-string-'
-                'theory-science/">https://www.scientificamerican.com/article/is-'
+                " physics</span>. Can a theory that isn’t completely testable"
+                " still be useful to physics?”</span> 23-Apr-2019."
+                " [Online]. Available:"
+                ' <a href="https://www.scientificamerican.com/'
+                'article/is-string-theory-science/">'
+                "https://www.scientificamerican.com/article/is-"
                 "string-theory-science/</a>. [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
                 "</div>\n"
@@ -422,11 +478,22 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
+            (
+                '<nav class="toc" role="doc-toc">\n'
+                "<ul>\n"
+                '<li><a href="#string-theory">String Theory</a></li>\n'
+                '<li><a href="#bibliography">References</a></li>\n'
+                "</ul>\n</nav>\n"
+            ),
             str(metadata["toc"]),
         )
         self.assertEqual(
-            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            (
+                "<p>But this foundational principle of science has now been"
+                " called into question by"
+                ' <a href="https://www.britannica.com/science/string-theory">'
+                "String Theory</a>.</p>\n"
+            ),
             str(metadata["summary"]),
         )
 
@@ -446,9 +513,10 @@ class TestPandocReader(unittest.TestCase):
         )
 
         pandoc_reader = PandocReader(settings)
-        source_path = os.path.join(CONTENT_PATH, "valid_content_with_citation.md")
+        source_path = os.path.join(
+            CONTENT_PATH, "valid_content_with_citation.md"
+        )
         output, metadata = pandoc_reader.read(source_path)
-
         self.maxDiff = None
 
         self.assertEqual(
@@ -456,76 +524,111 @@ class TestPandocReader(unittest.TestCase):
                 '<h2 id="string-theory">String Theory</h2>\n'
                 "<p>But this foundational principle of science has"
                 " now been called into question by"
-                ' <a href="https://www.britannica.com/science/string-theory">String Theory</a>,'
+                ' <a href="https://www.britannica.com/science/'
+                'string-theory">String Theory</a>,'
                 " which is a relative newcomer to theoretical physics, but one"
-                " that has captured the common imagination, judging by the popular"
-                " explanations that abound on the Web"
-                ' <span class="citation" data-cites="mann2019 wood2019 jones2020">[1]–[3]</span>.'
+                " that has captured the common imagination, judging by"
+                " the popular explanations that abound on the Web"
+                ' <span class="citation" data-cites="mann2019 wood2019'
+                ' jones2020">[1]–[3]</span>.'
                 " And whether string theory is or is not science, Popper"
                 " notwithstanding, is an issue that is still up for debate"
                 " <span"
                 ' class="citation" data-cites="siegel2015 castelvecchi2016'
                 ' alves2017 francis2019">[4]–[7]</span>.</p>\n'
                 '<h1 class="unnumbered" id="bibliography">References</h1>\n'
-                '<div id="refs" class="references csl-bib-body" role="doc-bibliography">\n'
-                '<div id="ref-mann2019" class="csl-entry" role="doc-biblioentry">\n'
+                '<div id="refs" class="references csl-bib-body"'
+                ' role="doc-bibliography">\n'
+                '<div id="ref-mann2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
                 '<div class="csl-left-margin">[1]'
                 ' </div><div class="csl-right-inline">A. Mann,'
-                " <span>“<span>What Is String Theory?</span>”</span> 20-Mar-2019. [Online]."
-                ' Available: <a href="https://www.livescience.com/65033-what-is-string-theory.html">'
-                "https://www.livescience.com/65033-what-is-string-theory.html</a>."
+                " <span>“<span>What Is String Theory?</span>”</span>"
+                " 20-Mar-2019. [Online]."
+                ' Available: <a href="https://www.livescience.com/'
+                '65033-what-is-string-theory.html">'
+                "https://www.livescience.com/"
+                "65033-what-is-string-theory.html</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-wood2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[2] </div><div class="csl-right-inline">'
-                "C. Wood, <span>“<span>What Is String Theory?</span>. Reference article:"
-                " A simplified explanation and brief history of string theory,”</span> 11-Jul-2019."
-                ' [Online]. Available: <a href="https://www.space.com/17594-string-theory.html">'
-                "https://www.space.com/17594-string-theory.html</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-wood2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[2] </div>'
+                '<div class="csl-right-inline">'
+                "C. Wood, <span>“<span>What Is String Theory?</span>."
+                " Reference article:"
+                " A simplified explanation and brief history of string"
+                " theory,”</span> 11-Jul-2019."
+                ' [Online]. Available: <a href="https://www.space.com/'
+                '17594-string-theory.html">'
+                "https://www.space.com/17594-string-theory.html</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-jones2020" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[3] </div><div class="csl-right-inline">'
+                '<div id="ref-jones2020" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[3]'
+                ' </div><div class="csl-right-inline">'
                 'A. Z. Jones, <span>“<span class="nocase">The Basics of String'
                 " Theory</span>,”</span> 02-Mar-2019. [Online]. Available:"
-                ' <a href="https://www.thoughtco.com/what-is-string-theory-2699363">'
-                "https://www.thoughtco.com/what-is-string-theory-2699363</a>. [Accessed: 12-Nov-2020]</div>\n"
+                ' <a href="https://www.thoughtco.com/'
+                'what-is-string-theory-2699363">'
+                "https://www.thoughtco.com/what-is-string-theory-2699363</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-siegel2015" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[4] </div><div class="csl-right-inline">'
+                '<div id="ref-siegel2015" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[4]'
+                ' </div><div class="csl-right-inline">'
                 "E. Siegel, <span>“<span>Why String Theory Is Not A Scientific"
                 " Theory</span>,”</span> 23-Dec-2015. [Online]. Available:"
                 " <a"
-                ' href="https://www.forbes.com/sites/startswithabang/2015/12/23/'
-                'why-string-theory-is-not-science/">https://www.forbes.com/sites/'
-                "startswithabang/2015/12/23/why-string-theory-is-not-science/</a>."
+                ' href="https://www.forbes.com/sites/'
+                "startswithabang/2015/12/23/"
+                'why-string-theory-is-not-science/">https://www.forbes.com/'
+                "sites/startswithabang/2015/12/23/"
+                "why-string-theory-is-not-science/</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-castelvecchi2016" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[5] </div><div class="csl-right-inline">'
-                'D. Castelvecchi, <span>“<span class="nocase">Feuding physicists turn'
-                " to philosophy for help</span>. String theory is at the heart of"
-                " a debate over the integrity of the scientific method itself,”"
-                "</span> 05-Jan-2016. [Online]. Available:"
-                ' <a href="https://www.nature.com/news/feuding-physicists-turn-to-philosophy-'
-                'for-help-1.19076">https://www.nature.com/news/feuding-physicists-turn-to-philosophy'
-                "-for-help-1.19076</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-castelvecchi2016" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[5]'
+                ' </div><div class="csl-right-inline">'
+                'D. Castelvecchi, <span>“<span class="nocase">'
+                "Feuding physicists turn"
+                " to philosophy for help</span>. String theory is at the"
+                " heart of a debate over the integrity of the scientific"
+                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                ' <a href="https://www.nature.com/news/'
+                'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
+                "https://www.nature.com/news/"
+                "feuding-physicists-turn-to-philosophy-for-help-1.19076</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-alves2017" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[6] </div><div class="csl-right-inline">'
+                '<div id="ref-alves2017" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[6] </div>'
+                '<div class="csl-right-inline">'
                 'R. A. Batista and J. Primack, <span>“<span class="nocase">'
                 "Is String theory falsifiable?</span>. Can a theory that isn’t"
-                " completely testable still be useful to physics?”</span> [Online]."
-                ' Available: <a href="https://metafact.io/factchecks/30-is-string-'
-                'theory-falsifiable">https://metafact.io/factchecks/30-is-string-'
-                "theory-falsifiable</a>. [Accessed: 12-Nov-2020]</div>\n"
+                " completely testable still be useful to physics?”</span>"
+                " [Online]."
+                ' Available: <a href="https://metafact.io/factchecks/'
+                '30-is-string-theory-falsifiable">'
+                "https://metafact.io/factchecks/"
+                "30-is-string-theory-falsifiable</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-francis2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[7] </div><div class="csl-right-inline">'
+                '<div id="ref-francis2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[7]'
+                ' </div><div class="csl-right-inline">'
                 'M. R. Francis, <span>“<span class="nocase">Falsifiability and'
-                " physics</span>. Can a theory that isn’t completely testable still"
-                " be useful to physics?”</span> 23-Apr-2019. [Online]. Available:"
-                ' <a href="https://www.scientificamerican.com/article/is-string-'
-                'theory-science/">https://www.scientificamerican.com/article/is-'
+                " physics</span>. Can a theory that isn’t completely testable"
+                " still be useful to physics?”</span> 23-Apr-2019."
+                " [Online]. Available:"
+                ' <a href="https://www.scientificamerican.com/'
+                'article/is-string-theory-science/">'
+                "https://www.scientificamerican.com/article/is-"
                 "string-theory-science/</a>. [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
                 "</div>\n"
@@ -537,18 +640,34 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
+            (
+                '<nav class="toc" role="doc-toc">\n'
+                "<ul>\n"
+                '<li><a href="#string-theory">String Theory</a></li>\n'
+                '<li><a href="#bibliography">References</a></li>\n'
+                "</ul>\n</nav>\n"
+            ),
             str(metadata["toc"]),
         )
         self.assertEqual(
-            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            (
+                "<p>But this foundational principle of science has now been"
+                " called into question by"
+                ' <a href="https://www.britannica.com/science/string-theory">'
+                "String Theory</a>.</p>\n"
+            ),
             str(metadata["summary"]),
         )
 
-    # Tests using default files
+
+class TestInvalidCasesWithDefaultFiles(unittest.TestCase):
+    """Invalid test cases using default files."""
+
     def test_invalid_standalone(self):
         """Check if exception is raised if standalone is true."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "standalone_true.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "standalone_true.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -559,11 +678,15 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("The default standalone should be set to false.", message)
+        self.assertEqual(
+            "The default standalone should be set to false.", message
+        )
 
     def test_invalid_self_contained(self):
         """Check if exception is raised if self-contained is true."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "selfcontained_true.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "selfcontained_true.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -574,11 +697,15 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("The default self-contained should be set to false.", message)
+        self.assertEqual(
+            "The default self-contained should be set to false.", message
+        )
 
     def test_no_input_format(self):
         """Check if exception is raised if no input format is specified."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "no_input_format.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "no_input_format.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -673,7 +800,9 @@ class TestPandocReader(unittest.TestCase):
 
     def test_no_output_format(self):
         """Check if exception is raised if no output format is specified."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "no_output_format.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "no_output_format.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -684,7 +813,9 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("Output format type must be either html or html5.", message)
+        self.assertEqual(
+            "Output format type must be either html or html5.", message
+        )
 
     def test_invalid_writer_output_format(self):
         """Check if exception is raised if writer output format is invalid."""
@@ -701,7 +832,9 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("Output format type must be either html or html5.", message)
+        self.assertEqual(
+            "Output format type must be either html or html5.", message
+        )
 
     def test_invalid_to_output_format(self):
         """Check if exception is raised if to output format is invalid."""
@@ -718,11 +851,19 @@ class TestPandocReader(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual("Output format type must be either html or html5.", message)
+        self.assertEqual(
+            "Output format type must be either html or html5.", message
+        )
+
+
+class TestValidCasesWithDefaultFiles(unittest.TestCase):
+    """Valid test cases using default files."""
 
     def test_valid_file_with_valid_defaults(self):
         """Check if we get the appropriate output specifying defaults."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "valid_defaults.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "valid_defaults.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -745,7 +886,9 @@ class TestPandocReader(unittest.TestCase):
 
     def test_mathjax_with_valid_defaults(self):
         """Check if mathematics is rendered correctly with defaults."""
-        pandoc_default_files = [os.path.join(DEFAULTS_PATH, "valid_defaults.yaml")]
+        pandoc_default_files = [
+            os.path.join(DEFAULTS_PATH, "valid_defaults.yaml")
+        ]
 
         settings = get_settings(PANDOC_DEFAULT_FILES=pandoc_default_files)
 
@@ -797,7 +940,9 @@ class TestPandocReader(unittest.TestCase):
             ),
             output,
         )
-        self.assertEqual("Valid Content with Table of Contents", str(metadata["title"]))
+        self.assertEqual(
+            "Valid Content with Table of Contents", str(metadata["title"])
+        )
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
@@ -818,7 +963,9 @@ class TestPandocReader(unittest.TestCase):
         """Check if output, citations and table of contents are valid."""
 
         pandoc_default_files = [
-            os.path.join(DEFAULTS_PATH, "valid_defaults_with_toc_and_citations.yaml")
+            os.path.join(
+                DEFAULTS_PATH, "valid_defaults_with_toc_and_citations.yaml"
+            )
         ]
 
         settings = get_settings(
@@ -828,86 +975,122 @@ class TestPandocReader(unittest.TestCase):
         )
         pandoc_reader = PandocReader(settings)
 
-        source_path = os.path.join(CONTENT_PATH, "valid_content_with_citation.md")
+        source_path = os.path.join(
+            CONTENT_PATH, "valid_content_with_citation.md"
+        )
         output, metadata = pandoc_reader.read(source_path)
-
-        self.maxDiff = None
+        self.maxDiff = None  # pylint: disable=invalid-name
 
         self.assertEqual(
             (
                 '<h2 id="string-theory">String Theory</h2>\n'
                 "<p>But this foundational principle of science has"
                 " now been called into question by"
-                ' <a href="https://www.britannica.com/science/string-theory">String Theory</a>,'
+                ' <a href="https://www.britannica.com/science/'
+                'string-theory">String Theory</a>,'
                 " which is a relative newcomer to theoretical physics, but one"
-                " that has captured the common imagination, judging by the popular"
-                " explanations that abound on the Web"
-                ' <span class="citation" data-cites="mann2019 wood2019 jones2020">[1]–[3]</span>.'
+                " that has captured the common imagination, judging by"
+                " the popular explanations that abound on the Web"
+                ' <span class="citation" data-cites="mann2019 wood2019'
+                ' jones2020">[1]–[3]</span>.'
                 " And whether string theory is or is not science, Popper"
                 " notwithstanding, is an issue that is still up for debate"
                 " <span"
                 ' class="citation" data-cites="siegel2015 castelvecchi2016'
                 ' alves2017 francis2019">[4]–[7]</span>.</p>\n'
                 '<h1 class="unnumbered" id="bibliography">References</h1>\n'
-                '<div id="refs" class="references csl-bib-body" role="doc-bibliography">\n'
-                '<div id="ref-mann2019" class="csl-entry" role="doc-biblioentry">\n'
+                '<div id="refs" class="references csl-bib-body"'
+                ' role="doc-bibliography">\n'
+                '<div id="ref-mann2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
                 '<div class="csl-left-margin">[1]'
                 ' </div><div class="csl-right-inline">A. Mann,'
-                " <span>“<span>What Is String Theory?</span>”</span> 20-Mar-2019. [Online]."
-                ' Available: <a href="https://www.livescience.com/65033-what-is-string-theory.html">'
-                "https://www.livescience.com/65033-what-is-string-theory.html</a>."
+                " <span>“<span>What Is String Theory?</span>”</span>"
+                " 20-Mar-2019. [Online]."
+                ' Available: <a href="https://www.livescience.com/'
+                '65033-what-is-string-theory.html">'
+                "https://www.livescience.com/"
+                "65033-what-is-string-theory.html</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-wood2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[2] </div><div class="csl-right-inline">'
-                "C. Wood, <span>“<span>What Is String Theory?</span>. Reference article:"
-                " A simplified explanation and brief history of string theory,”</span> 11-Jul-2019."
-                ' [Online]. Available: <a href="https://www.space.com/17594-string-theory.html">'
-                "https://www.space.com/17594-string-theory.html</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-wood2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[2] </div>'
+                '<div class="csl-right-inline">'
+                "C. Wood, <span>“<span>What Is String Theory?</span>."
+                " Reference article:"
+                " A simplified explanation and brief history of string"
+                " theory,”</span> 11-Jul-2019."
+                ' [Online]. Available: <a href="https://www.space.com/'
+                '17594-string-theory.html">'
+                "https://www.space.com/17594-string-theory.html</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-jones2020" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[3] </div><div class="csl-right-inline">'
+                '<div id="ref-jones2020" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[3]'
+                ' </div><div class="csl-right-inline">'
                 'A. Z. Jones, <span>“<span class="nocase">The Basics of String'
                 " Theory</span>,”</span> 02-Mar-2019. [Online]. Available:"
-                ' <a href="https://www.thoughtco.com/what-is-string-theory-2699363">'
-                "https://www.thoughtco.com/what-is-string-theory-2699363</a>. [Accessed: 12-Nov-2020]</div>\n"
+                ' <a href="https://www.thoughtco.com/'
+                'what-is-string-theory-2699363">'
+                "https://www.thoughtco.com/what-is-string-theory-2699363</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-siegel2015" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[4] </div><div class="csl-right-inline">'
+                '<div id="ref-siegel2015" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[4]'
+                ' </div><div class="csl-right-inline">'
                 "E. Siegel, <span>“<span>Why String Theory Is Not A Scientific"
                 " Theory</span>,”</span> 23-Dec-2015. [Online]. Available:"
                 " <a"
-                ' href="https://www.forbes.com/sites/startswithabang/2015/12/23/'
-                'why-string-theory-is-not-science/">https://www.forbes.com/sites/'
-                "startswithabang/2015/12/23/why-string-theory-is-not-science/</a>."
+                ' href="https://www.forbes.com/sites/'
+                "startswithabang/2015/12/23/"
+                'why-string-theory-is-not-science/">https://www.forbes.com/'
+                "sites/startswithabang/2015/12/23/"
+                "why-string-theory-is-not-science/</a>."
                 " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-castelvecchi2016" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[5] </div><div class="csl-right-inline">'
-                'D. Castelvecchi, <span>“<span class="nocase">Feuding physicists turn'
-                " to philosophy for help</span>. String theory is at the heart of"
-                " a debate over the integrity of the scientific method itself,”"
-                "</span> 05-Jan-2016. [Online]. Available:"
-                ' <a href="https://www.nature.com/news/feuding-physicists-turn-to-philosophy-'
-                'for-help-1.19076">https://www.nature.com/news/feuding-physicists-turn-to-philosophy'
-                "-for-help-1.19076</a>. [Accessed: 12-Nov-2020]</div>\n"
+                '<div id="ref-castelvecchi2016" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[5]'
+                ' </div><div class="csl-right-inline">'
+                'D. Castelvecchi, <span>“<span class="nocase">'
+                "Feuding physicists turn"
+                " to philosophy for help</span>. String theory is at the"
+                " heart of a debate over the integrity of the scientific"
+                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                ' <a href="https://www.nature.com/news/'
+                'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
+                "https://www.nature.com/news/"
+                "feuding-physicists-turn-to-philosophy-for-help-1.19076</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-alves2017" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[6] </div><div class="csl-right-inline">'
+                '<div id="ref-alves2017" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[6] </div>'
+                '<div class="csl-right-inline">'
                 'R. A. Batista and J. Primack, <span>“<span class="nocase">'
                 "Is String theory falsifiable?</span>. Can a theory that isn’t"
-                " completely testable still be useful to physics?”</span> [Online]."
-                ' Available: <a href="https://metafact.io/factchecks/30-is-string-'
-                'theory-falsifiable">https://metafact.io/factchecks/30-is-string-'
-                "theory-falsifiable</a>. [Accessed: 12-Nov-2020]</div>\n"
+                " completely testable still be useful to physics?”</span>"
+                " [Online]."
+                ' Available: <a href="https://metafact.io/factchecks/'
+                '30-is-string-theory-falsifiable">'
+                "https://metafact.io/factchecks/"
+                "30-is-string-theory-falsifiable</a>."
+                " [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
-                '<div id="ref-francis2019" class="csl-entry" role="doc-biblioentry">\n'
-                '<div class="csl-left-margin">[7] </div><div class="csl-right-inline">'
+                '<div id="ref-francis2019" class="csl-entry"'
+                ' role="doc-biblioentry">\n'
+                '<div class="csl-left-margin">[7]'
+                ' </div><div class="csl-right-inline">'
                 'M. R. Francis, <span>“<span class="nocase">Falsifiability and'
-                " physics</span>. Can a theory that isn’t completely testable still"
-                " be useful to physics?”</span> 23-Apr-2019. [Online]. Available:"
-                ' <a href="https://www.scientificamerican.com/article/is-string-'
-                'theory-science/">https://www.scientificamerican.com/article/is-'
+                " physics</span>. Can a theory that isn’t completely testable"
+                " still be useful to physics?”</span> 23-Apr-2019."
+                " [Online]. Available:"
+                ' <a href="https://www.scientificamerican.com/'
+                'article/is-string-theory-science/">'
+                "https://www.scientificamerican.com/article/is-"
                 "string-theory-science/</a>. [Accessed: 12-Nov-2020]</div>\n"
                 "</div>\n"
                 "</div>\n"
@@ -919,11 +1102,22 @@ class TestPandocReader(unittest.TestCase):
         self.assertEqual("My Author", str(metadata["author"]))
         self.assertEqual("2020-10-16 00:00:00", str(metadata["date"]))
         self.assertEqual(
-            '<nav class="toc" role="doc-toc">\n<ul>\n<li><a href="#string-theory">String Theory</a></li>\n<li><a href="#bibliography">References</a></li>\n</ul>\n</nav>\n',
+            (
+                '<nav class="toc" role="doc-toc">\n'
+                "<ul>\n"
+                '<li><a href="#string-theory">String Theory</a></li>\n'
+                '<li><a href="#bibliography">References</a></li>\n'
+                "</ul>\n</nav>\n"
+            ),
             str(metadata["toc"]),
         )
         self.assertEqual(
-            '<p>But this foundational principle of science has now been called into question by <a href="https://www.britannica.com/science/string-theory">String Theory</a>.</p>\n',
+            (
+                "<p>But this foundational principle of science has now been"
+                " called into question by"
+                ' <a href="https://www.britannica.com/science/string-theory">'
+                "String Theory</a>.</p>\n"
+            ),
             str(metadata["summary"]),
         )
         self.assertEqual("1", str(metadata["reading_time"]))

@@ -12,9 +12,13 @@ VENV_PATH = Path(ACTIVE_VENV) if ACTIVE_VENV else (VENV_HOME / PKG_NAME)
 VENV = str(VENV_PATH.expanduser())
 
 TOOLS = ["poetry", "pre-commit"]
-POETRY = which("poetry") if which("poetry") else (VENV / Path("bin") / "poetry")
+POETRY = (
+    which("poetry") if which("poetry") else (VENV / Path("bin") / "poetry")
+)
 PRECOMMIT = (
-    which("pre-commit") if which("pre-commit") else (VENV / Path("bin") / "pre-commit")
+    which("pre-commit")
+    if which("pre-commit")
+    else (VENV / Path("bin") / "pre-commit")
 )
 
 
@@ -32,7 +36,9 @@ def black(c, check=False, diff=False):
         check_flag = "--check"
     if diff:
         diff_flag = "--diff"
-    c.run(f"{VENV}/bin/black {check_flag} {diff_flag} {PKG_PATH} tasks.py")
+    c.run(
+        f"{VENV}/bin/black {check_flag} {diff_flag} --line-length 79 {PKG_PATH} tasks.py"
+    )
 
 
 @task

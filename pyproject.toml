@@ -57,11 +57,13 @@ git-username = "botpub"
 git-email = "botpub@autopub.rocks"
 
 [tool.isort]
-# Maintain compatibility with Black
+sections = ['FUTURE', 'STDLIB', 'YAML', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
+known_yaml = ['yaml']
+known_third_party = "pelican"
 combine_as_imports = true
 force_grid_wrap = 0
 include_trailing_comma = true
-line_length = 88
+line_length = 79
 multi_line_output = 3
 
 # Sort imports within their section independent of the import type
