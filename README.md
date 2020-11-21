@@ -18,8 +18,9 @@ pip install PyYAML
 
 This package has been tested using the following versions of the above dependencies:
 
-* Pandoc 2.11.0
-* PyYAML 5.3.1
+* Python >= 3.7
+* Pandoc >= 2.11.0
+* PyYAML >= 5.3.1
 
 Earlier versions of these dependencies will not be supported.
 
@@ -118,7 +119,7 @@ Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) 
 
 ### Generating a Table of Contents
 
-If you desire to create a Table of Contents for your posts or pages you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown:
+If you desire to create a Table of Contents for your posts or pages you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
 
 ```python
 PANDOC_ARGS = [
@@ -134,19 +135,19 @@ PANDOC_ARGS = [
 ]
 ```
 
-To specify this setting in a defaults file use the syntax below:
+To specify this setting in a defaults file use the syntax below.
 
 ```yaml
 table-of-contents: true
 ```
 
-The table of contents will be available for use in templates using the `{{ article.toc }}` or `{{ page.toc }}` Jinja variables.
+The table of contents will be available for use in templates using the `{{ article.toc }}` or `{{ page.toc }}` Jinja template variables.
 
-### Citation Support
+### Using Citations
 
 You may enable citations for your posts or pages by specifying the `citations` extension and the `-C` or `--citeproc` option.
 
-Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below:
+Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below.
 
 ```python
 PANDOC_ARGS = [
@@ -183,9 +184,27 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your citations in any format supported by Pandoc with the appropriate extension.
 
-However, you **must** name it the same as your blog. For example a blog with the file name `my-blog.md` should have a citations file called `my-blog.bib` or `my-blog.json`or `my-blog.yaml` or `my-blog.bibtex`.
+However, you **must** name it the same as your blog. For example a blog with the file name `my-blog.md` should have a citations file called `my-blog.bib` or `my-blog.json`or `my-blog.yaml` or `my-blog.bibtex`in the same directory that your blog resides or in a subdirectory of that directory. Otherwise the citations will not be picked up.
 
-You **must** place the citations file in the same directory that your blog resides or in a subdirectory of that directory. Otherwise the citations will not be picked up.
+### Calculating and Displaying Reading Time
+
+The plugin also has the capability to calculate the reading time for an article or page. To enable the calculation of the reading time you will have to set the `PANDOC_CALC_READING_TIME` setting to `True` in your `pelicanconf.py` file as shown below.
+
+```python
+PANDOC_CALC_READING_TIME = True
+```
+
+The plugin uses a Pandoc Lua filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) behind the scenes to count the number of words in the source file.
+
+Once the number of words is retrieved it is divided by the average words per minute to give you the reading time in minutes.
+
+You may then access the reading time by using either the `{{ article.reading_time }}` or `{{ page.reading_time }}` Jinja template variables to display the reading time on your blogs and pages.
+
+The average words per minute is set to 200 but you may modify it by setting the `PANDOC_READING_TIME_WPM` to the desired value as shown below.
+
+```python
+PANDOC_READING_TIME_WPM = <words-per-minute>
+```
 
 ### Known Issues
 
