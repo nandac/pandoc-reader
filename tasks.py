@@ -36,8 +36,9 @@ def black(c, check=False, diff=False):
         check_flag = "--check"
     if diff:
         diff_flag = "--diff"
+    line_length = "--line-length 79"
     c.run(
-        f"{VENV}/bin/black {check_flag} {diff_flag} --line-length 79 {PKG_PATH} tasks.py"
+        f"{VENV}/bin/black {check_flag} {diff_flag} {line_length} {PKG_PATH} tasks.py"
     )
 
 
@@ -59,7 +60,7 @@ def flake8(c):
 @task
 def lint(c):
     isort(c, check=True)
-    black(c, check=True, diff=True)
+    black(c, check=True)
     flake8(c)
 
 
