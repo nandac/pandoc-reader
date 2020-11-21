@@ -202,8 +202,9 @@ class PandocReader(BaseReader):
         for line in lines[:yaml_end]:
             metalist = line.split(":", 1)
             if len(metalist) == 2:
-                key, value = metalist[0].lower(), metalist[1].strip().strip(
-                    '"'
+                key, value = (
+                    metalist[0].lower(),
+                    metalist[1].strip().strip('"'),
                 )
                 # Takes care of metadata that should be converted to HTML
                 if key in self.settings["FORMATTED_FIELDS"]:
