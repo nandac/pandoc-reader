@@ -171,9 +171,7 @@ class PandocReader(BaseReader):
         output = self.__run_pandoc(pandoc_cmd, content)
         wordcount = output.split()[0]
         words_per_minute = self.settings.get("PANDOC_READING_TIME_WPM", 200)
-        reading_time = str(
-            math.ceil(float(wordcount) / float(words_per_minute))
-        )
+        reading_time = str(math.ceil(float(wordcount) / float(words_per_minute)))
         return reading_time
 
     def __process_header_metadata(self, content, metadata, pandoc_cmd):
