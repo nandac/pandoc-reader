@@ -435,7 +435,7 @@ class TestValidCasesWithArguments(unittest.TestCase):
                 "Feuding physicists turn"
                 " to philosophy for help</span>. String theory is at the"
                 " heart of a debate over the integrity of the scientific"
-                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                " method itself,”</span> 05-Jan-2016. [Online]. Available:"
                 ' <a href="https://www.nature.com/news/'
                 'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
                 "https://www.nature.com/news/"
@@ -597,7 +597,7 @@ class TestValidCasesWithArguments(unittest.TestCase):
                 "Feuding physicists turn"
                 " to philosophy for help</span>. String theory is at the"
                 " heart of a debate over the integrity of the scientific"
-                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                " method itself,”</span> 05-Jan-2016. [Online]. Available:"
                 ' <a href="https://www.nature.com/news/'
                 'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
                 "https://www.nature.com/news/"
@@ -1059,7 +1059,7 @@ class TestValidCasesWithDefaultFiles(unittest.TestCase):
                 "Feuding physicists turn"
                 " to philosophy for help</span>. String theory is at the"
                 " heart of a debate over the integrity of the scientific"
-                " method itself,</span> 05-Jan-2016. [Online]. Available:"
+                " method itself,”</span> 05-Jan-2016. [Online]. Available:"
                 ' <a href="https://www.nature.com/news/'
                 'feuding-physicists-turn-to-philosophy-for-help-1.19076">'
                 "https://www.nature.com/news/"
