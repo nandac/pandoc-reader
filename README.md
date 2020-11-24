@@ -6,12 +6,12 @@ The Pandoc Reader is a [Pelican](http://getpelican.com) plugin that converts doc
 
 The plugin has a number of dependencies:
 
-1. Python >= 3.7
-1. Pelican >= 4.5.1
-1. Pandoc >= 2.11.0
-1. PyYAML >= 5.3.1
+* Python >= 3.7
+* Pelican >= 4.5.1
+* Pandoc >= 2.11.0
+* PyYAML >= 5.3.1
 
-All three **must** be installed locally on your machine or webserver.
+All four **must** be installed locally on your machine or webserver.
 
 To find out how to install Python please see [here](https://wiki.python.org/moin/BeginnersGuide/Download)
 
