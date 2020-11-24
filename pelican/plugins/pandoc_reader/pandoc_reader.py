@@ -15,7 +15,7 @@ LUA_FILTERS_PATH = os.path.abspath(os.path.join(DIR_PATH, "filters"))
 TEMPLATES_PATH = os.path.abspath(os.path.join(DIR_PATH, "templates"))
 TOC_TEMPLATE = "toc-template.html"
 LUA_WORDCOUNT_FILTER = "wordcount.lua"
-DEFAULT_READING_SPEED = 200 # Words per minute
+DEFAULT_READING_SPEED = 200  # Words per minute
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",

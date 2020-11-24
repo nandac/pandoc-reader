@@ -91,9 +91,7 @@ class TestGeneralTestCases(unittest.TestCase):
             pandoc_reader.read(source_path)
 
         message = str(context_manager.exception)
-        self.assertEqual(
-            "READING_SPEED setting must be a number.", message
-        )
+        self.assertEqual("READING_SPEED setting must be a number.", message)
 
     def test_summary(self):
         """Check if summary output is valid."""
