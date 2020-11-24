@@ -11,7 +11,7 @@ The plugin has a number of dependencies:
 1. Pandoc >= 2.11.0
 1. PyYAML >= 5.3.1
 
-All three **must** be installed locally.
+All three **must** be installed locally on your machine or webserver.
 
 To find out how to install Python please see [here](https://wiki.python.org/moin/BeginnersGuide/Download)
 
@@ -24,7 +24,7 @@ pip install pelican
 pip install PyYAML
 ```
 
-The plugin should function correctly on newer versions of the above dependencies.
+The plugin should function correctly on newer versions of the above dependencies as well.
 
 ## Installation
 
@@ -38,7 +38,7 @@ python -m pip install pelican-pandoc-reader
 
 This plugin only converts Pandoc's Markdown into HTML 5. Conversion to formats other than HTML 5 is not supported.
 
-Other flavors of Markdown are supported but requires the use of defaults file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
+Other flavors of Markdown are supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
 
 ### Specifying File Metadata
 
@@ -108,8 +108,6 @@ PANDOC_DEFAULT_FILES = [
 ]
 ```
 
-Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
-
 Here is a simple example of content that should be available in a Pandoc default file:
 
 ```yaml
@@ -117,13 +115,15 @@ reader: markdown
 writer: html5
 ```
 
+Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
+
 Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example of the options available for this file.
 
 **Note: In both methods specifying the arguments `--standalone` or `--self-contained` is not supported.**
 
 ### Generating a Table of Contents
 
-If you desire to create a Table of Contents for your posts or pages you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
+If you desire to create a Table of Contents, for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
 
 ```python
 PANDOC_ARGS = [
@@ -139,7 +139,7 @@ PANDOC_ARGS = [
 ]
 ```
 
-To specify this setting in a defaults file use the syntax below.
+To set this in a default file use the syntax below.
 
 ```yaml
 table-of-contents: true
@@ -147,7 +147,7 @@ table-of-contents: true
 
 The table of contents will be available for use in templates using the `{{ article.toc }}` or `{{ page.toc }}` Jinja template variables.
 
-### Using Citations
+### Enabling Citations
 
 You may enable citations for your posts or pages by specifying the `citations` extension and the `-C` or `--citeproc` option.
 
@@ -175,7 +175,7 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-If you are using a defaults file you should specify the following as a bare minimum.
+If you are using a default file you need the following as a bare minimum.
 
 ```yaml
 reader: markdown+citations
@@ -186,33 +186,33 @@ citeproc: true
 
 Without these settings citations will not be processed by the plugin.
 
-You may write your citations in any format supported by Pandoc with the appropriate extension.
+You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-However, you **must** name it the same as your blog. For example a blog with the file name `my-blog.md` should have a citations file called `my-blog.bib` or `my-blog.json`or `my-blog.yaml` or `my-blog.bibtex`in the same directory that your blog resides or in a subdirectory of that directory. Otherwise the citations will not be picked up.
+For example a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to so will mean that the citations will not be picked up.
 
 ### Calculating and Displaying Reading Time
 
-The plugin also has the capability to calculate the reading time for an article or page. To enable the calculation of the reading time you will have to set the `PANDOC_CALC_READING_TIME` setting to `True` in your `pelicanconf.py` file as shown below.
+The plugin also has the capability to calculate the reading time for an article or page. To enable the calculation of the reading time you will have to set the `CALCULATE_READING_TIME` setting to `True` in your `pelicanconf.py` file as shown below.
 
 ```python
-PANDOC_CALC_READING_TIME = True
+CALCULATE_READING_TIME = True
 ```
 
-The plugin uses a Pandoc Lua filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) behind the scenes to count the number of words in the source file.
+You may access the reading time in templates by using `{{ article.reading_time }}` or `{{ page.reading_time }}` variables.
 
-Once the number of words is retrieved it is divided by the average words per minute to give you the reading time in minutes.
+The reading time is calculated by dividing the number of words by the words per minute. The default value for the words per minutes is 200 words.
 
-You may then access the reading time by using either the `{{ article.reading_time }}` or `{{ page.reading_time }}` Jinja template variables to display the reading time on your blogs and pages.
-
-The average words per minute is set to 200 but you may modify it by setting the `PANDOC_READING_TIME_WPM` to the desired value as shown below.
+This value may be customized by setting the `WORDS_PER_MINUTE_READ_TIME` to the desired value in `pelicanconf.py`.
 
 ```python
-PANDOC_READING_TIME_WPM = <words-per-minute>
+WORDS_PER_MINUTE_READ_TIME = <words-per-minute>
 ```
+
+The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua), which has the benefit of omitting words in metadata fields and code blocks, providing an accurate word count.
 
 ### Known Issues
 
-The posts and pages of your site can take several seconds to be converted to HTML, if linking to a Citation Style Language (CSL) specification using a URL, as shown below:
+The posts and pages of your site can take several seconds to be converted to HTML if linking to a Citation Style Language (CSL) specification, using a URL, as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -226,7 +226,7 @@ or
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-This is due to the need to download the CSL specification for every post or page each time which causing very long processing times.
+This is due to the need to re-download the CSL specification for every post or page causing long processing times.
 
 Therefore, we recommend downloading the CSL specification to your machine or webserver, and giving the `csl` argument a relative path to the file. This speeds up processing time by 10x.
 
