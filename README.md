@@ -38,11 +38,11 @@ python -m pip install pelican-pandoc-reader
 
 This plugin converts Pandoc's Markdown into HTML 5. Conversion from other flavours of Markdown are supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
 
-o formats other than HTML 5 is not supported.
+Converting to formats other than HTML 5 is not supported.
 
 ### Specifying File Metadata
 
-The plugin expects all markdown files to start with a YAML block as shown below.
+The plugin expects all Markdown files to start with a YAML block as shown below.
 
 ```yaml
 ---
@@ -62,11 +62,11 @@ date: "<date>"
 ...
 ```
 
-**Note: The plugin supports Pandoc's YAML syntax for specifying metadata. However, Pelican's format for metadata is different and may need to be rewritten if you stop using this plugin.
+**Note: The plugin supports Pandoc's YAML syntax for specifying metadata. However, Pelican's format for metadata is different and may need to be rewritten if you stop using this plugin.**
 
-YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string such as when specifying tags.
+YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string, such as when specifying tags for your blogs.
 
-More information on Pandoc's Metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
+More information on Pandoc's YAML metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
 
 Information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 
@@ -101,7 +101,7 @@ PANDOC_EXTENSIONS = [
 
 #### Method Two: Using Pandoc Default Files
 
-The second method involves specifying the path(s) to one or more default file(s) with all your preferences written in YAML format.
+The second method involves specifying the path(s) to one or more YAML default file(s) with all your preferences.
 
 These paths should be set in your `pelicanconf.py` file by using the setting `PANDOC_DEFAULT_FILES`. The paths maybe absolute or relative but we recommend using relative paths as they are more portable.
 
@@ -192,21 +192,21 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to do so will mean that the citations will not be picked up.
+For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to do so will mean that the references will not be picked up.
 
 ### Calculating and Displaying Reading Time
 
-The plugin can be set to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file.
+The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file.
 
 ```python
 CALCULATE_READING_TIME = True
 ```
 
-You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time will be displayed as minute or minutes depending on whether the reading time is less than or equal to one minute or greater than one minute.
+You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time, will be displayed as minute or minutes, depending on whether the reading time is less than or equal to one minute, or greater than one minute.
 
-The reading time is calculated by dividing the number of words by the reading speed, which is set to the average number of words read in one minute.
+The reading time is calculated by dividing the number of words by the reading speed.
 
-The default value for reading speed is set to 200 words per minute, but may be customized by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
+The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
 
 ```python
 READING_SPEED = <words-per-minute>
@@ -216,7 +216,7 @@ The number of words in a document is calculated by a Pandoc Lua Filter called [w
 
 ### Known Issues
 
-The posts and pages of your site can take several seconds to be converted to HTML if linking to a Citation Style Language (CSL) specification, using a URL, as shown below:
+The posts and pages of your site can take several seconds to get converted to HTML if linking to a Citation Style Language (CSL) specification, using a URL, as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -230,9 +230,9 @@ or
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-This is due to the need to re-download the CSL specification for every post or page causing long processing times.
+This is due to the need to download the CSL file for each post or page causing long processing times.
 
-To overcome this issue, you may download a local copy of the CSL file to your machine or webserver, and give the `csl` argument a relative path to the file. This speeds up processing by 10x.
+To overcome this issue, you may download a local copy of the CSL file to your machine or webserver. The set the `csl` argument to a relative path to the file. This speeds up processing by 10x.
 
 ## Contributing
 
