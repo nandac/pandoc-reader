@@ -57,7 +57,7 @@ class TestGeneralTestCases(unittest.TestCase):
 
         _, metadata = pandoc_reader.read(source_path)
 
-        self.assertEqual("2", str(metadata["reading_time"]))
+        self.assertEqual("2 minutes", str(metadata["reading_time"]))
 
     def test_user_defined_wpm_reading_time(self):
         """Check if 100 words per minute user defined gives us 4 minutes."""
@@ -65,7 +65,7 @@ class TestGeneralTestCases(unittest.TestCase):
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
             PANDOC_ARGS=PANDOC_ARGS,
             CALCULATE_READING_TIME=CALCULATE_READING_TIME,
-            WORDS_PER_MINUTE_READ_TIME=100,
+            READING_SPEED=100,
         )
 
         pandoc_reader = PandocReader(settings)
@@ -73,7 +73,7 @@ class TestGeneralTestCases(unittest.TestCase):
 
         _, metadata = pandoc_reader.read(source_path)
 
-        self.assertEqual("4", str(metadata["reading_time"]))
+        self.assertEqual("4 minutes", str(metadata["reading_time"]))
 
     def test_invalid_user_defined_wpm(self):
         """Check if exception is raised if words per minute is not a number."""
@@ -81,7 +81,7 @@ class TestGeneralTestCases(unittest.TestCase):
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
             PANDOC_ARGS=PANDOC_ARGS,
             CALCULATE_READING_TIME=CALCULATE_READING_TIME,
-            WORDS_PER_MINUTE_READ_TIME="my words per minute",
+            READING_SPEED="my words per minute",
         )
 
         pandoc_reader = PandocReader(settings)
@@ -92,7 +92,7 @@ class TestGeneralTestCases(unittest.TestCase):
 
         message = str(context_manager.exception)
         self.assertEqual(
-            "WORDS_PER_MINUTE_READ_TIME must be a number.", message
+            "READING_SPEED setting must be a number.", message
         )
 
     def test_summary(self):

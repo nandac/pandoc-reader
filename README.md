@@ -192,23 +192,23 @@ For example a blog with the file name `my-blog.md` should have a bibliography fi
 
 ### Calculating and Displaying Reading Time
 
-The plugin also has the capability to calculate the reading time for an article or page. To enable the calculation of the reading time you will have to set the `CALCULATE_READING_TIME` setting to `True` in your `pelicanconf.py` file as shown below.
+The plugin can be set to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file.
 
 ```python
 CALCULATE_READING_TIME = True
 ```
 
-You may access the reading time in templates by using `{{ article.reading_time }}` or `{{ page.reading_time }}` variables.
+You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The reading time will appear as _1 minute_ or _4 minutes_ depending on the reading time value.
 
-The reading time is calculated by dividing the number of words by the words per minute. The default value for the words per minutes is 200 words.
+The reading time is calculated by dividing the number of words by the reading speed, which is set to the average number of words read in one minute.
 
-This value may be customized by setting the `WORDS_PER_MINUTE_READ_TIME` to the desired value in `pelicanconf.py`.
+The default value for reading speed is set to 200 words per minute but may be customized by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
 
 ```python
-WORDS_PER_MINUTE_READ_TIME = <words-per-minute>
+READING_SPEED = <words-per-minute>
 ```
 
-The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua), which has the benefit of omitting words in metadata fields and code blocks, providing an accurate word count.
+The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) which omits words in metadata fields and code blocks, providing an accurate word count.
 
 ### Known Issues
 

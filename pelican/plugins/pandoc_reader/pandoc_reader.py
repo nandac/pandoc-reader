@@ -15,7 +15,7 @@ LUA_FILTERS_PATH = os.path.abspath(os.path.join(DIR_PATH, "filters"))
 TEMPLATES_PATH = os.path.abspath(os.path.join(DIR_PATH, "templates"))
 TOC_TEMPLATE = "toc-template.html"
 LUA_WORDCOUNT_FILTER = "wordcount.lua"
-DEFAULT_WORDS_PER_MINUTE = 200
+DEFAULT_READING_SPEED = 200 # Words per minute
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
@@ -171,20 +171,22 @@ class PandocReader(BaseReader):
         ]
         output = self._run_pandoc(pandoc_cmd, content)
         wordcount = output.split()[0]
-        words_per_minute = self.settings.get(
-            "WORDS_PER_MINUTE_READ_TIME", DEFAULT_WORDS_PER_MINUTE
+        reading_speed = self.settings.get(
+            "READING_SPEED", DEFAULT_READING_SPEED
         )
+        time_unit = "minutes"
 
         try:
-            reading_time = math.ceil(
-                float(wordcount) / float(words_per_minute)
-            )
+            reading_time = math.ceil(float(wordcount) / float(reading_speed))
+            if reading_time == 1:
+                time_unit = "minute"
+            reading_time = "{} {}".format(str(reading_time), time_unit)
         except ValueError as words_per_minute_nan:
             raise ValueError(
-                "WORDS_PER_MINUTE_READ_TIME must be a number."
+                "READING_SPEED setting must be a number."
             ) from words_per_minute_nan
 
-        return str(reading_time)
+        return reading_time
 
     def _process_header_metadata(self, content, metadata, pandoc_cmd):
         """Process YAML metadata and export."""
@@ -248,7 +250,7 @@ class PandocReader(BaseReader):
             pandoc_cmd,
             input=content,
             capture_output=True,
-            encoding="UTF-8",
+            encoding="utf-8",
             check=True,
         )
         return output.stdout
