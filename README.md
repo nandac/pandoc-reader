@@ -28,7 +28,7 @@ The plugin should function correctly on newer versions of the above dependencies
 
 ## Installation
 
-to install the plugin execute the following command.
+To install the plugin execute the following command.
 
 ```bash
 python -m pip install pelican-pandoc-reader
@@ -36,9 +36,9 @@ python -m pip install pelican-pandoc-reader
 
 ## Usage
 
-This plugin only converts Pandoc's Markdown into HTML 5. Conversion to formats other than HTML 5 is not supported.
+This plugin converts Pandoc's Markdown into HTML 5. Conversion from other flavours of Markdown are supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
 
-Other flavors of Markdown are supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
+o formats other than HTML 5 is not supported.
 
 ### Specifying File Metadata
 
@@ -62,9 +62,13 @@ date: "<date>"
 ...
 ```
 
-**Note: Pelican's recommended format for metadata is different to what is specified here. You may need to rewrite the metadata in your files if you stop using this plugin.**
+**Note: The plugin supports Pandoc's YAML syntax for specifying metadata. However, Pelican's format for metadata is different and may need to be rewritten if you stop using this plugin.
 
-More information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
+YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string such as when specifying tags.
+
+More information on Pandoc's Metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
+
+Information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 
 ### Specifying Pandoc Options
 
@@ -95,9 +99,9 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-#### Method Two: Using Pandoc Defaults Files
+#### Method Two: Using Pandoc Default Files
 
-The second method involves specifying the path(s) to one or more YAML file(s), with all your preferences.
+The second method involves specifying the path(s) to one or more default file(s) with all your preferences written in YAML format.
 
 These paths should be set in your `pelicanconf.py` file by using the setting `PANDOC_DEFAULT_FILES`. The paths maybe absolute or relative but we recommend using relative paths as they are more portable.
 
@@ -108,7 +112,7 @@ PANDOC_DEFAULT_FILES = [
 ]
 ```
 
-Here is a simple example of content that should be available in a Pandoc default file:
+Here is a minimal example of content that should be available in a Pandoc default file:
 
 ```yaml
 reader: markdown
@@ -117,13 +121,13 @@ writer: html5
 
 Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
 
-Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example of the options available for this file.
+Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example.
 
-**Note: In both methods specifying the arguments `--standalone` or `--self-contained` is not supported.**
+**Note: In both methods specifying the arguments `--standalone` or `--self-contained` is not supported and will result in an error.**
 
 ### Generating a Table of Contents
 
-If you desire to create a Table of Contents, for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
+If you desire to create a Table of Contents for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
 
 ```python
 PANDOC_ARGS = [
@@ -175,7 +179,7 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-If you are using a default file you need the following as a bare minimum.
+If you are using a default file you need the following as a bare minimum to enable citations.
 
 ```yaml
 reader: markdown+citations
@@ -188,7 +192,7 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-For example a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to so will mean that the citations will not be picked up.
+For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to do so will mean that the citations will not be picked up.
 
 ### Calculating and Displaying Reading Time
 
@@ -198,17 +202,17 @@ The plugin can be set to calculate the reading time of articles and pages by set
 CALCULATE_READING_TIME = True
 ```
 
-You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The reading time will appear as _1 minute_ or _4 minutes_ depending on the reading time value.
+You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time will be displayed as minute or minutes depending on whether the reading time is less than or equal to one minute or greater than one minute.
 
 The reading time is calculated by dividing the number of words by the reading speed, which is set to the average number of words read in one minute.
 
-The default value for reading speed is set to 200 words per minute but may be customized by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
+The default value for reading speed is set to 200 words per minute, but may be customized by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
 
 ```python
 READING_SPEED = <words-per-minute>
 ```
 
-The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) which omits words in metadata fields and code blocks, providing an accurate word count.
+The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) which omits words in metadata fields and code blocks, providing a more accurate word count.
 
 ### Known Issues
 
@@ -228,7 +232,7 @@ csl: "https://www.zotero.org/styles/ieee-with-url"
 
 This is due to the need to re-download the CSL specification for every post or page causing long processing times.
 
-Therefore, we recommend downloading the CSL specification to your machine or webserver, and giving the `csl` argument a relative path to the file. This speeds up processing time by 10x.
+To overcome this issue, you may download a local copy of the CSL file to your machine or webserver, and give the `csl` argument a relative path to the file. This speeds up processing by 10x.
 
 ## Contributing
 
@@ -238,4 +242,4 @@ To start contributing to this plugin, review the [Contributing to Pelican](https
 
 ## Credits
 
-Originally authored by [Hinrich B. Winther](https://github.com/liob), December 2014, and subsequently forked and enhanced by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) through the addition of several features in October 2020.
+Authored by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/).
