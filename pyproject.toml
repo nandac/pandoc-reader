@@ -59,7 +59,8 @@ git-email = "botpub@autopub.rocks"
 [tool.isort]
 sections = ['FUTURE', 'STDLIB', 'YAML', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
 known_yaml = ['yaml']
-known_third_party = "pelican"
+known_third_party = 'pelican'
+known_first_party = 'pandoc_reader'
 combine_as_imports = true
 force_grid_wrap = 0
 include_trailing_comma = true

@@ -1,32 +1,34 @@
 # Pandoc Reader
 
-Pandoc Reader is a [Pelican](http://getpelican.com) plugin to convert documents written in [Pandoc](https://pandoc.org/) Markdown to HTML 5.
-
-[Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) is a flavour of [Markdown](http://daringfireball.net/projects/markdown/) with extensions.
+The Pandoc Reader is a [Pelican](http://getpelican.com) plugin that converts documents written in [Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) into HTML 5.
 
 ## Prerequisites
 
-For this plugin to function you must have Pandoc and the [PyYAML](https://pypi.org/project/PyYAML/) python package installed on your system.
+The plugin has a number of dependencies:
 
-Please follow the [installation instructions](https://pandoc.org/installing.html) to install Pandoc.
+1. Python >= 3.7
+1. Pelican >= 4.5.1
+1. Pandoc >= 2.11.0
+1. PyYAML >= 5.3.1
 
-To install PyYAML execute the following command using [pip](https://pip.pypa.io/en/stable/installing/):
+All three **must** be installed locally.
+
+To find out how to install Python please see [here](https://wiki.python.org/moin/BeginnersGuide/Download)
+
+To install Pandoc follow these [installation instructions](https://pandoc.org/installing.html).
+
+[PyYAML](https://pypi.org/project/PyYAML/) and Pelican can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below
 
 ```bash
+pip install pelican
 pip install PyYAML
 ```
 
-This package has been tested using the following versions of the above dependencies:
-
-* Python >= 3.7
-* Pandoc >= 2.11.0
-* PyYAML >= 5.3.1
-
-Earlier versions of these dependencies will not be supported.
+The plugin should function correctly on newer versions of the above dependencies.
 
 ## Installation
 
-The plugin may be installed using pip:
+to install the plugin execute the following command.
 
 ```bash
 python -m pip install pelican-pandoc-reader
@@ -34,7 +36,9 @@ python -m pip install pelican-pandoc-reader
 
 ## Usage
 
-This plugin converts Pandoc's Markdown into HTML 5. Conversion to formats other than HTML 5 will not be supported.
+This plugin only converts Pandoc's Markdown into HTML 5. Conversion to formats other than HTML 5 is not supported.
+
+Other flavors of Markdown are supported but requires the use of defaults file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
 
 ### Specifying File Metadata
 
@@ -58,13 +62,13 @@ date: "<date>"
 ...
 ```
 
-**Note: Pelican's recommended format for metadata is different to what is specified here, and may require you to rewrite the metadata in your files, if you stop using this plugin.**
+**Note: Pelican's recommended format for metadata is different to what is specified here. You may need to rewrite the metadata in your files if you stop using this plugin.**
 
 More information about Pelican's predefined metadata is available [here](https://docs.getpelican.com/en/stable/content.html#file-metadata).
 
 ### Specifying Pandoc Options
 
-The plugin supports two methods to pass options to Pandoc that are **mutually exclusive**. These methods are described in the sections below.
+The plugin supports two **mutually exclusive** methods to pass options to Pandoc.
 
 #### Method One: Using Settings in `pelicanconf.py`
 
@@ -73,7 +77,7 @@ The first method involves configuring two settings in your `pelicanconf.py` file
 * `PANDOC_ARGS`
 * `PANDOC_EXTENSIONS`
 
-In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc as shown below:
+In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc as shown below.
 
 ```python
 PANDOC_ARGS = [
@@ -104,9 +108,9 @@ PANDOC_DEFAULT_FILES = [
 ]
 ```
 
-Using default files has the added benefit of allowing you to use other markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
+Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
 
-Here is a simple example of content that should be available in a Pandoc defaults file:
+Here is a simple example of content that should be available in a Pandoc default file:
 
 ```yaml
 reader: markdown

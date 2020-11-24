@@ -15,6 +15,7 @@ LUA_FILTERS_PATH = os.path.abspath(os.path.join(DIR_PATH, "filters"))
 TEMPLATES_PATH = os.path.abspath(os.path.join(DIR_PATH, "templates"))
 TOC_TEMPLATE = "toc-template.html"
 LUA_WORDCOUNT_FILTER = "wordcount.lua"
+DEFAULT_WORDS_PER_MINUTE = 200
 
 ENCODED_LINKS_TO_RAW_LINKS_MAP = {
     "%7Bstatic%7D": "{static}",
@@ -47,11 +48,11 @@ class PandocReader(BaseReader):
             content = file_content
 
         # Retrieve HTML content and metadata
-        output, metadata = self.__create_html(source_path, content)
+        output, metadata = self._create_html(source_path, content)
 
         return output, metadata
 
-    def __create_html(self, source_path, content):
+    def _create_html(self, source_path, content):
         """Create HTML5 content."""
         # Get settings set in pelicanconf.py
         default_files = self.settings.get("PANDOC_DEFAULT_FILES", [])
@@ -62,22 +63,22 @@ class PandocReader(BaseReader):
             extensions = "".join(extensions)
 
         # Check validity of arguments or default files
-        table_of_contents, citations = self.__validate_fields(
+        table_of_contents, citations = self._validate_fields(
             default_files, arguments, extensions
         )
 
         # Construct preliminary pandoc command
-        pandoc_cmd = self.__construct_pandoc_command(
+        pandoc_cmd = self._construct_pandoc_command(
             default_files, arguments, extensions
         )
 
         # Find and add bibliography if citations are specified
         if citations:
-            for bib_file in self.__find_bibs(source_path):
+            for bib_file in self._find_bibs(source_path):
                 pandoc_cmd.append("--bibliography={0}".format(bib_file))
 
         # Create HTML content
-        output = self.__run_pandoc(pandoc_cmd, content)
+        output = self._run_pandoc(pandoc_cmd, content)
 
         # Replace all occurrences of %7Bstatic%7D to {static},
         # %7Battach%7D to {attach} and %7Bfilename%7D to {filename}
@@ -89,42 +90,42 @@ class PandocReader(BaseReader):
         if table_of_contents:
             # Create table of contents and add to metadata
             metadata["toc"] = self.process_metadata(
-                "toc", self.__create_toc(pandoc_cmd, content)
+                "toc", self._create_toc(pandoc_cmd, content)
             )
 
-        if self.settings.get("PANDOC_CALC_READING_TIME", []):
+        if self.settings.get("CALCULATE_READING_TIME", []):
             # Calculate reading time and add to metadata
             metadata["reading_time"] = self.process_metadata(
-                "reading_time", self.__calculate_reading_time(content)
+                "reading_time", self._calculate_reading_time(content)
             )
 
         # Parse YAML metadata placed in the document's header
-        metadata = self.__process_header_metadata(
+        metadata = self._process_header_metadata(
             list(content.splitlines()), metadata, pandoc_cmd
         )
 
         return output, metadata
 
-    def __validate_fields(self, default_files, arguments, extensions):
+    def _validate_fields(self, default_files, arguments, extensions):
         """Validate fields and return citations and ToC request values."""
         # If default_files is empty then validate the argument and extensions
         if not default_files:
             # Validate the arguments to see that they are supported
             # by the plugin
-            self.__check_arguments(arguments)
+            self._check_arguments(arguments)
 
             # Check if citations have been requested
-            citations = self.__check_if_citations(arguments, extensions)
+            citations = self._check_if_citations(arguments, extensions)
 
             # Check if table of contents has been requested
-            table_of_contents = self.__check_if_toc(arguments)
+            table_of_contents = self._check_if_toc(arguments)
         else:
             # Validate default files and get the citations
             # abd table of contents request value
-            citations, table_of_contents = self.__check_defaults(default_files)
+            citations, table_of_contents = self._check_defaults(default_files)
         return table_of_contents, citations
 
-    def __check_defaults(self, default_files):
+    def _check_defaults(self, default_files):
         """Check if the given Pandoc defaults file has valid values."""
         citations = False
         table_of_contents = False
@@ -135,9 +136,9 @@ class PandocReader(BaseReader):
             with open(default_file) as file_handle:
                 defaults = safe_load(file_handle)
 
-            self.__check_if_unsupported_settings(defaults)
-            reader = self.__check_input_format(defaults)
-            self.__check_output_format(defaults)
+            self._check_if_unsupported_settings(defaults)
+            reader = self._check_input_format(defaults)
+            self._check_output_format(defaults)
 
             if not citations:
                 if defaults.get("citeproc", "") and "+citations" in reader:
@@ -149,7 +150,7 @@ class PandocReader(BaseReader):
 
         return citations, table_of_contents
 
-    def __create_toc(self, pandoc_cmd, content):
+    def _create_toc(self, pandoc_cmd, content):
         """Generate table of contents."""
         toc_args = [
             "--standalone",
@@ -158,25 +159,34 @@ class PandocReader(BaseReader):
         ]
 
         pandoc_cmd = pandoc_cmd + toc_args
-        table_of_contents = self.__run_pandoc(pandoc_cmd, content)
+        table_of_contents = self._run_pandoc(pandoc_cmd, content)
         return table_of_contents
 
-    def __calculate_reading_time(self, content):
+    def _calculate_reading_time(self, content):
         """Calculate time taken to read content."""
         pandoc_cmd = [
             "pandoc",
             "--lua-filter",
             os.path.join(LUA_FILTERS_PATH, LUA_WORDCOUNT_FILTER),
         ]
-        output = self.__run_pandoc(pandoc_cmd, content)
+        output = self._run_pandoc(pandoc_cmd, content)
         wordcount = output.split()[0]
-        words_per_minute = self.settings.get("PANDOC_READING_TIME_WPM", 200)
-        reading_time = str(
-            math.ceil(float(wordcount) / float(words_per_minute))
+        words_per_minute = self.settings.get(
+            "WORDS_PER_MINUTE_READ_TIME", DEFAULT_WORDS_PER_MINUTE
         )
-        return reading_time
 
-    def __process_header_metadata(self, content, metadata, pandoc_cmd):
+        try:
+            reading_time = math.ceil(
+                float(wordcount) / float(words_per_minute)
+            )
+        except ValueError as words_per_minute_nan:
+            raise ValueError(
+                "WORDS_PER_MINUTE_READ_TIME must be a number."
+            ) from words_per_minute_nan
+
+        return str(reading_time)
+
+    def _process_header_metadata(self, content, metadata, pandoc_cmd):
         """Process YAML metadata and export."""
         # Check that the given text is not empty
         if not content:
@@ -208,12 +218,12 @@ class PandocReader(BaseReader):
                 )
                 # Takes care of metadata that should be converted to HTML
                 if key in self.settings["FORMATTED_FIELDS"]:
-                    value = self.__run_pandoc(pandoc_cmd, value)
+                    value = self._run_pandoc(pandoc_cmd, value)
                 metadata[key] = self.process_metadata(key, value)
         return metadata
 
     @staticmethod
-    def __construct_pandoc_command(default_files, arguments, extensions):
+    def _construct_pandoc_command(default_files, arguments, extensions):
         """Construct Pandoc command for content."""
         pandoc_cmd = []
         if not default_files:
@@ -232,7 +242,7 @@ class PandocReader(BaseReader):
         return pandoc_cmd
 
     @staticmethod
-    def __run_pandoc(pandoc_cmd, content):
+    def _run_pandoc(pandoc_cmd, content):
         """Execute the given pandoc command and return output."""
         output = subprocess.run(
             pandoc_cmd,
@@ -244,7 +254,7 @@ class PandocReader(BaseReader):
         return output.stdout
 
     @staticmethod
-    def __check_if_citations(arguments, extensions):
+    def _check_if_citations(arguments, extensions):
         """Check if citations are specified."""
         citations = False
         if arguments and extensions:
@@ -255,7 +265,7 @@ class PandocReader(BaseReader):
         return citations
 
     @staticmethod
-    def __check_if_toc(arguments):
+    def _check_if_toc(arguments):
         """Check if a table of contents should be generated."""
         table_of_contents = False
         if arguments:
@@ -264,7 +274,7 @@ class PandocReader(BaseReader):
         return table_of_contents
 
     @staticmethod
-    def __find_bibs(source_path):
+    def _find_bibs(source_path):
         """Find bibliographies recursively in the sourcepath given."""
         bib_files = []
         filename = os.path.splitext(os.path.basename(source_path))[0]
@@ -277,14 +287,14 @@ class PandocReader(BaseReader):
         return bib_files
 
     @staticmethod
-    def __check_arguments(arguments):
+    def _check_arguments(arguments):
         """Check to see that only supported arguments have been passed."""
         for arg in arguments:
             if arg in UNSUPPORTED_ARGUMENTS:
                 raise ValueError("Argument {0} is not supported.".format(arg))
 
     @staticmethod
-    def __check_if_unsupported_settings(defaults):
+    def _check_if_unsupported_settings(defaults):
         """Check if unsupported settings are specified in the defaults."""
         for arg in UNSUPPORTED_ARGUMENTS:
             arg = arg[2:]
@@ -294,7 +304,7 @@ class PandocReader(BaseReader):
                 )
 
     @staticmethod
-    def __check_input_format(defaults):
+    def _check_input_format(defaults):
         """Check if the input format given is a Markdown variant."""
         reader = ""
         reader_input = defaults.get("reader", "")
@@ -327,7 +337,7 @@ class PandocReader(BaseReader):
         return reader
 
     @staticmethod
-    def __check_output_format(defaults):
+    def _check_output_format(defaults):
         """Check if the output format is HTML or HTML5."""
         writer_output = defaults.get("writer", "")
         to_output = defaults.get("to", "")

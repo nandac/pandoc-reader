@@ -4,8 +4,9 @@ import os
 import shutil
 import unittest
 
-from pandoc_reader import PandocReader
 from pelican.tests.support import get_settings
+
+from pandoc_reader import PandocReader
 
 DIR_PATH = os.path.dirname(__file__)
 CONTENT_PATH = os.path.abspath(os.path.join(DIR_PATH, "content"))
@@ -14,11 +15,11 @@ DEFAULTS_PATH = os.path.abspath(os.path.join(DIR_PATH, "defaults"))
 # Test settings that will be set in pelicanconf.py by plugin users
 PANDOC_ARGS = ["--mathjax"]
 PANDOC_EXTENSIONS = ["+smart", "+implicit_figures"]
-PANDOC_CALC_READING_TIME = True
+CALCULATE_READING_TIME = True
 FORMATTED_FIELDS = ["summary"]
 
 
-class TestPandocInstallation(unittest.TestCase):
+class TestGeneralTestCases(unittest.TestCase):
     """Test installation of Pandoc."""
 
     # Test using pelicanconf settings variables
@@ -42,6 +43,88 @@ class TestPandocInstallation(unittest.TestCase):
             # Case where pandoc is installed
             message = "Pandoc is installed."
             self.assertEqual("Pandoc is installed.", message)
+
+    def test_default_wpm_reading_time(self):
+        """Check if 200 words per minute give us reading time of 2 minutes."""
+        settings = get_settings(
+            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
+            PANDOC_ARGS=PANDOC_ARGS,
+            CALCULATE_READING_TIME=CALCULATE_READING_TIME,
+        )
+
+        pandoc_reader = PandocReader(settings)
+        source_path = os.path.join(CONTENT_PATH, "reading_time_content.md")
+
+        _, metadata = pandoc_reader.read(source_path)
+
+        self.assertEqual("2", str(metadata["reading_time"]))
+
+    def test_user_defined_wpm_reading_time(self):
+        """Check if 100 words per minute user defined gives us 4 minutes."""
+        settings = get_settings(
+            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
+            PANDOC_ARGS=PANDOC_ARGS,
+            CALCULATE_READING_TIME=CALCULATE_READING_TIME,
+            WORDS_PER_MINUTE_READ_TIME=100,
+        )
+
+        pandoc_reader = PandocReader(settings)
+        source_path = os.path.join(CONTENT_PATH, "reading_time_content.md")
+
+        _, metadata = pandoc_reader.read(source_path)
+
+        self.assertEqual("4", str(metadata["reading_time"]))
+
+    def test_invalid_user_defined_wpm(self):
+        """Check if exception is raised if words per minute is not a number."""
+        settings = get_settings(
+            PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
+            PANDOC_ARGS=PANDOC_ARGS,
+            CALCULATE_READING_TIME=CALCULATE_READING_TIME,
+            WORDS_PER_MINUTE_READ_TIME="my words per minute",
+        )
+
+        pandoc_reader = PandocReader(settings)
+        source_path = os.path.join(CONTENT_PATH, "reading_time_content.md")
+
+        with self.assertRaises(ValueError) as context_manager:
+            pandoc_reader.read(source_path)
+
+        message = str(context_manager.exception)
+        self.assertEqual(
+            "WORDS_PER_MINUTE_READ_TIME must be a number.", message
+        )
+
+    def test_summary(self):
+        """Check if summary output is valid."""
+
+        pandoc_default_files = [
+            os.path.join(
+                DEFAULTS_PATH, "valid_defaults_with_toc_and_citations.yaml"
+            )
+        ]
+
+        settings = get_settings(
+            PANDOC_DEFAULT_FILES=pandoc_default_files,
+            FORMATTED_FIELDS=FORMATTED_FIELDS,
+        )
+        pandoc_reader = PandocReader(settings)
+
+        source_path = os.path.join(
+            CONTENT_PATH, "valid_content_with_citation.md"
+        )
+
+        _, metadata = pandoc_reader.read(source_path)
+
+        self.assertEqual(
+            (
+                "<p>But this foundational principle of science has now been"
+                " called into question by"
+                ' <a href="https://www.britannica.com/science/string-theory">'
+                "String Theory</a>.</p>\n"
+            ),
+            str(metadata["summary"]),
+        )
 
 
 class TestInvalidCasesWithArguments(unittest.TestCase):
@@ -649,15 +732,6 @@ class TestValidCasesWithArguments(unittest.TestCase):
             ),
             str(metadata["toc"]),
         )
-        self.assertEqual(
-            (
-                "<p>But this foundational principle of science has now been"
-                " called into question by"
-                ' <a href="https://www.britannica.com/science/string-theory">'
-                "String Theory</a>.</p>\n"
-            ),
-            str(metadata["summary"]),
-        )
 
 
 class TestInvalidCasesWithDefaultFiles(unittest.TestCase):
@@ -970,7 +1044,6 @@ class TestValidCasesWithDefaultFiles(unittest.TestCase):
 
         settings = get_settings(
             PANDOC_DEFAULT_FILES=pandoc_default_files,
-            PANDOC_CALC_READING_TIME=PANDOC_CALC_READING_TIME,
             FORMATTED_FIELDS=FORMATTED_FIELDS,
         )
         pandoc_reader = PandocReader(settings)
@@ -1111,16 +1184,6 @@ class TestValidCasesWithDefaultFiles(unittest.TestCase):
             ),
             str(metadata["toc"]),
         )
-        self.assertEqual(
-            (
-                "<p>But this foundational principle of science has now been"
-                " called into question by"
-                ' <a href="https://www.britannica.com/science/string-theory">'
-                "String Theory</a>.</p>\n"
-            ),
-            str(metadata["summary"]),
-        )
-        self.assertEqual("1", str(metadata["reading_time"]))
 
 
 if __name__ == "__main__":
