@@ -10,15 +10,15 @@ The plugin has a number of dependencies:
 * Pelican >= 4.5.1
 * Pandoc >= 2.11.0
 * PyYAML >= 5.3.1
-* Markdown Word Count
+* Markdown Word Count >= 0.0.1
 
-All four **must** be installed locally on your machine or webserver.
+All five **must** be installed locally on your machine or webserver.
 
 To find out how to install Python please see [here](https://wiki.python.org/moin/BeginnersGuide/Download)
 
-To install Pandoc follow these [installation instructions](https://pandoc.org/installing.html).
+To install Pandoc follow these [instructions](https://pandoc.org/installing.html).
 
-Pelican, [PyYAML](https://pypi.org/project/PyYAML/) and the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below:
+Pelican, [PyYAML](https://pypi.org/project/PyYAML/) and the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) packages can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below:
 
 ```bash
 pip install pelican
@@ -38,7 +38,7 @@ python -m pip install pelican-pandoc-reader
 
 ## Usage
 
-This plugin converts Pandoc's Markdown into HTML 5. Conversion from other flavours of Markdown are supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
+This plugin converts Pandoc's Markdown into HTML 5. Conversion from other flavours of Markdown is supported but requires the use of a default file as described [here](https://github.com/nandac/pandoc-reader#method-two-using-pandoc-defaults-files).
 
 Converting to formats other than HTML 5 is not supported.
 
@@ -64,9 +64,9 @@ date: "<date>"
 ...
 ```
 
-**Note: The plugin supports Pandoc's YAML syntax for specifying metadata which is different to Pelican's format for metadata. You may need to be rewrite the metadata in your files if you stop using this plugin.**
+**Note: The YAML block shown above is Pandoc's syntax for specifying file metadata. This is different to Pelican's format. You may need to be rewrite the metadata in your files, in Pelican's format, if you stop using this plugin.**
 
-YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string.
+YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string instead.
 
 More information on Pandoc's YAML metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
 
@@ -83,7 +83,7 @@ The first method involves configuring two settings in your `pelicanconf.py` file
 * `PANDOC_ARGS`
 * `PANDOC_EXTENSIONS`
 
-In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc as shown below.
+In the `PANDOC_ARGS` parameter you may specify any argument supported by Pandoc as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -92,7 +92,7 @@ PANDOC_ARGS = [
 ]
 ```
 
-Then in the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of the supported [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions).
+Then in the `PANDOC_EXTENSIONS` parameter you may enable/disable any number of the supported [Pandoc extensions](https://pandoc.org/MANUAL.html#extensions):
 
 ```python
 PANDOC_EXTENSIONS = [
@@ -103,7 +103,7 @@ PANDOC_EXTENSIONS = [
 
 #### Method Two: Using Pandoc Default Files
 
-The second method involves specifying the path(s) to one or more YAML default file(s) with all your preferences.
+The second method involves specifying the path(s) to one or more Pandoc default file(s) with all your preferences.
 
 These paths should be set in your `pelicanconf.py` file by using the setting `PANDOC_DEFAULT_FILES`. The paths maybe absolute or relative but we recommend using relative paths as they are more portable.
 
@@ -194,7 +194,7 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failure to do so will mean that the references will not be picked up.
+For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog, or in a subdirectory of the directory that your blog resides in. Failure to do so will mean that the references will not be picked up.
 
 #### Known Issues with Citations
 
@@ -212,9 +212,11 @@ Or in a Pandoc default file like so:
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-Specifying a remote CSL file as shown dramatically increases the time taken to process the content files.
+Specifying a remote CSL file as shown above, dramatically increases the time taken to process the Markdown content.
 
-To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from Zotero. Which may be referenced in `pelicanconf.py` as shown below:
+To improve processing speed, it is highly recommended that you use a local copy of the CSL file downloaded from Zotero.
+
+You may then reference it in `pelicanconf.py` as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -230,7 +232,7 @@ csl: "path/to/file/ieee-with-url.csl"
 
 ### Calculating and Displaying Reading Time
 
-The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file:
+The plugin may be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file:
 
 ```python
 CALCULATE_READING_TIME = True
@@ -240,7 +242,7 @@ You may display the reading time using the `{{ article.reading_time }}` or `{{ p
 
 The reading time is calculated by dividing the number of words by the reading speed.
 
-The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`:
+The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute value in `pelicanconf.py`:
 
 ```python
 READING_SPEED = <words-per-minute>
@@ -256,4 +258,4 @@ To start contributing to this plugin, review the [Contributing to Pelican](https
 
 ## Credits
 
-Authored by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/).
+Originally authored by [Hinrich B. Winther](https://github.com/liob) in December 2014, which was forked and completely redesigned and rewritten by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) in October 2020.
