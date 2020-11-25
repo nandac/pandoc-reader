@@ -194,27 +194,7 @@ You may write your bibliography in any format supported by Pandoc with the appro
 
 For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to do so will mean that the references will not be picked up.
 
-### Calculating and Displaying Reading Time
-
-The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file:
-
-```python
-CALCULATE_READING_TIME = True
-```
-
-You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time, will be displayed as minute or minutes, depending on whether the reading time is less than or equal to one minute, or greater than one minute.
-
-The reading time is calculated by dividing the number of words by the reading speed.
-
-The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`:
-
-```python
-READING_SPEED = <words-per-minute>
-```
-
-The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) which omits words in metadata fields and code blocks, providing a more accurate word count.
-
-### Known Issues
+#### Known Issues with Citations
 
 If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from Zotero. This file may be specified so:
 
@@ -235,8 +215,28 @@ Processing time increases when using a remote CSL file.
 To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from [Zotero](https://www.zotero.org/) which may be referenced as shown below:
 
 ```yaml
-csl: "./ieee-with-url.csl"
+csl: "path/to/file/ieee-with-url.csl"
 ```
+
+### Calculating and Displaying Reading Time
+
+The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file:
+
+```python
+CALCULATE_READING_TIME = True
+```
+
+You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time, will be displayed as minute or minutes, depending on whether the reading time is less than or equal to one minute, or greater than one minute.
+
+The reading time is calculated by dividing the number of words by the reading speed.
+
+The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`:
+
+```python
+READING_SPEED = <words-per-minute>
+```
+
+The number of words in a document is calculated by a Pandoc Lua Filter called [wordcount.lua](https://github.com/pandoc/lua-filters/blob/master/wordcount/wordcount.lua) which omits words in metadata fields and code blocks, providing a more accurate word count.
 
 ## Contributing
 
