@@ -45,7 +45,7 @@ class TestGeneralTestCases(unittest.TestCase):
             self.assertEqual("Pandoc is installed.", message)
 
     def test_default_wpm_reading_time(self):
-        """Check if 200 words per minute give us reading time of 2 minutes."""
+        """Check if 200 words per minute give us reading time of 1 minute."""
         settings = get_settings(
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
             PANDOC_ARGS=PANDOC_ARGS,
@@ -57,10 +57,10 @@ class TestGeneralTestCases(unittest.TestCase):
 
         _, metadata = pandoc_reader.read(source_path)
 
-        self.assertEqual("2 minutes", str(metadata["reading_time"]))
+        self.assertEqual("1 minute", str(metadata["reading_time"]))
 
     def test_user_defined_wpm_reading_time(self):
-        """Check if 100 words per minute user defined gives us 4 minutes."""
+        """Check if 100 words per minute user defined gives us 2 minutes."""
         settings = get_settings(
             PANDOC_EXTENSIONS=PANDOC_EXTENSIONS,
             PANDOC_ARGS=PANDOC_ARGS,
@@ -73,7 +73,7 @@ class TestGeneralTestCases(unittest.TestCase):
 
         _, metadata = pandoc_reader.read(source_path)
 
-        self.assertEqual("4 minutes", str(metadata["reading_time"]))
+        self.assertEqual("2 minutes", str(metadata["reading_time"]))
 
     def test_invalid_user_defined_wpm(self):
         """Check if exception is raised if words per minute is not a number."""
