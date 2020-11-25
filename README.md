@@ -127,7 +127,7 @@ Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) 
 
 ### Generating a Table of Contents
 
-If you desire to create a Table of Contents for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown.
+If you desire to create a Table of Contents for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown:
 
 ```python
 PANDOC_ARGS = [
@@ -143,7 +143,7 @@ PANDOC_ARGS = [
 ]
 ```
 
-To set this in a default file use the syntax below.
+To set this in a default file use the syntax below:
 
 ```yaml
 table-of-contents: true
@@ -155,7 +155,7 @@ The table of contents will be available for use in templates using the `{{ artic
 
 You may enable citations for your posts or pages by specifying the `citations` extension and the `-C` or `--citeproc` option.
 
-Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below.
+Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below:
 
 ```python
 PANDOC_ARGS = [
@@ -179,7 +179,7 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-If you are using a default file you need the following as a bare minimum to enable citations.
+If you are using a default file you need the following as a bare minimum to enable citations:
 
 ```yaml
 reader: markdown+citations
@@ -196,7 +196,7 @@ For example, a blog with the file name `my-blog.md` should have a bibliography f
 
 ### Calculating and Displaying Reading Time
 
-The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file.
+The plugin can be used to calculate the reading time of articles and pages by setting `CALCULATE_READING_TIME` to `True` in your `pelicanconf.py` file:
 
 ```python
 CALCULATE_READING_TIME = True
@@ -206,7 +206,7 @@ You may display the reading time using the `{{ article.reading_time }}` or `{{ p
 
 The reading time is calculated by dividing the number of words by the reading speed.
 
-The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`.
+The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute integer value in `pelicanconf.py`:
 
 ```python
 READING_SPEED = <words-per-minute>
@@ -216,7 +216,7 @@ The number of words in a document is calculated by a Pandoc Lua Filter called [w
 
 ### Known Issues
 
-The posts and pages of your site can take several seconds to get converted to HTML if linking to a Citation Style Language (CSL) specification, using a URL, as shown below:
+If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from Zotero. This file may be specified so:
 
 ```python
 PANDOC_ARGS = [
@@ -230,9 +230,13 @@ or
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-This is due to the need to download the CSL file for each post or page causing long processing times.
+Processing time increases when using a remote CSL file.
 
-To overcome this issue, you may download a local copy of the CSL file to your machine or webserver. The set the `csl` argument to a relative path to the file. This speeds up processing by 10x.
+To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from [Zotero](https://www.zotero.org/) which may be referenced as shown below:
+
+```yaml
+csl: "./ieee-with-url.csl"
+```
 
 ## Contributing
 
