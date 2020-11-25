@@ -1,6 +1,6 @@
 # Pandoc Reader
 
-The Pandoc Reader is a [Pelican](http://getpelican.com) plugin that converts documents written in [Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) into HTML 5.
+Pandoc Reader is a [Pelican](http://getpelican.com) plugin that converts documents written in [Pandoc's Markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) into HTML 5.
 
 ## Prerequisites
 
@@ -66,7 +66,7 @@ date: "<date>"
 
 **Note: The YAML block shown above is Pandoc's syntax for specifying file metadata. This is different to Pelican's format. You may need to be rewrite the metadata in your files, in Pelican's format, if you stop using this plugin.**
 
-YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string instead.
+YAML blocks that define more than one level, such as YAML lists are not supported, although, they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list, use a comma separated string instead.
 
 More information on Pandoc's YAML metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
 
@@ -103,7 +103,7 @@ PANDOC_EXTENSIONS = [
 
 #### Method Two: Using Pandoc Default Files
 
-The second method involves specifying the path(s) to one or more Pandoc default file(s) with all your preferences.
+The second method involves specifying the path(s) to one or more Pandoc default file(s), with all your preferences written in YAML format.
 
 These paths should be set in your `pelicanconf.py` file by using the setting `PANDOC_DEFAULT_FILES`. The paths maybe absolute or relative but we recommend using relative paths as they are more portable.
 
@@ -121,7 +121,7 @@ reader: markdown
 writer: html5
 ```
 
-Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
+Using default files has the added benefit of allowing you to use other Markdown flavors supported by Pandoc such as, [CommonMark](https://commonmark.org/) and [GitHub-Flavored Markdown](https://docs.github.com/en/free-pro-team@latest/github/writing-on-github).
 
 Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) for a more complete example.
 
@@ -129,7 +129,7 @@ Please see [Pandoc Default files](https://pandoc.org/MANUAL.html#default-files) 
 
 ### Generating a Table of Contents
 
-If you desire to create a Table of Contents for your posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown:
+If you desire to create a Table of Contents for posts or pages, you may do so by specifying the `--toc` or `--table-of-contents` argument in the `PANDOC_ARGS` setting as shown:
 
 ```python
 PANDOC_ARGS = [
@@ -145,7 +145,7 @@ PANDOC_ARGS = [
 ]
 ```
 
-To set this in a default file use the syntax below:
+To set this in a Pandoc default file use the syntax below:
 
 ```yaml
 table-of-contents: true
@@ -155,7 +155,7 @@ The table of contents will be available for use in templates using the `{{ artic
 
 ### Enabling Citations
 
-You may enable citations for your posts or pages by specifying the `citations` extension and the `-C` or `--citeproc` option.
+You may enable citations by specifying the `citations` extension and the `-C` or `--citeproc` option.
 
 Set the `PANDOC_ARGS` and `PANDOC_EXTENSIONS` in `pelicanconf.py` as shown below:
 
@@ -181,7 +181,7 @@ PANDOC_EXTENSIONS = [
 ]
 ```
 
-If you are using a default file you need the following as a bare minimum to enable citations:
+If you are using a Pandoc default file you need the following as a bare minimum to enable citations:
 
 ```yaml
 reader: markdown+citations
@@ -194,11 +194,11 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog, or in a subdirectory of the directory that your blog resides in. Failure to do so will mean that the references will not be picked up.
+For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex` in the same directory as your blog, or in a subdirectory of the directory that your blog resides in. Failure to do so will mean that the references will not be picked up.
 
 #### Known Issues with Citations
 
-If enabling citations with a specific style, you may need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example, if you are using `ieee-with-url` style file it may be specified in `pelicanconf.py` as shown:
+If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example, if you are using `ieee-with-url` style file it may be specified in your `pelicanconf.py` as shown:
 
 ```python
 PANDOC_ARGS = [
@@ -238,9 +238,9 @@ The plugin may be used to calculate the reading time of articles and pages by se
 CALCULATE_READING_TIME = True
 ```
 
-You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time, will be displayed as minute or minutes, depending on whether the reading time is less than or equal to one minute, or greater than one minute.
+You may display the reading time using the `{{ article.reading_time }}` or `{{ page.reading_time }}` template variables. The unit of time will be displayed as minute for reading times less than or equal to one minute, or minutes for those greater than one minute.
 
-The reading time is calculated by dividing the number of words by the reading speed.
+The reading time is calculated by dividing the number of words by the reading speed which is the average number words read in a minute.
 
 The default value for reading speed is set to 200 words per minute, but may be customized, by setting `READING_SPEED` to the desired words per minute value in `pelicanconf.py`:
 
@@ -258,4 +258,4 @@ To start contributing to this plugin, review the [Contributing to Pelican](https
 
 ## Credits
 
-Originally authored by [Hinrich B. Winther](https://github.com/liob) in December 2014, which was forked and completely redesigned and rewritten by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) in October 2020.
+Originally authored by [Hinrich B. Winther](https://github.com/liob) in December 2014, which was subsequently forked and completely redesigned and rewritten by [Nandakumar Chandrasekhar](https://www.linkedin.com/in/nandakumar-chandrasekhar-a400b45b/) in October 2020.
