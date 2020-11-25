@@ -10,6 +10,7 @@ The plugin has a number of dependencies:
 * Pelican >= 4.5.1
 * Pandoc >= 2.11.0
 * PyYAML >= 5.3.1
+* Markdown Word Count
 
 All four **must** be installed locally on your machine or webserver.
 
@@ -17,11 +18,12 @@ To find out how to install Python please see [here](https://wiki.python.org/moin
 
 To install Pandoc follow these [installation instructions](https://pandoc.org/installing.html).
 
-[PyYAML](https://pypi.org/project/PyYAML/) and Pelican can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below
+[PyYAML](https://pypi.org/project/PyYAML/), Pelican and the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below
 
 ```bash
 pip install pelican
 pip install PyYAML
+pip install markdown-word-count
 ```
 
 The plugin should function correctly on newer versions of the above dependencies as well.
@@ -236,7 +238,7 @@ The default value for reading speed is set to 200 words per minute, but may be c
 READING_SPEED = <words-per-minute>
 ```
 
-The number of words in a document is calculated using the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) python package.
+The number of words in a document is calculated using the Markdown Word Count python package.
 
 ## Contributing
 
