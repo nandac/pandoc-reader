@@ -196,7 +196,7 @@ For example, a blog with the file name `my-blog.md` should have a bibliography f
 
 #### Known Issues with Citations
 
-If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example if you are using ieee-with-url style file it may be specified so:
+If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example, if you are using ieee-with-url style file it may be specified so:
 
 ```python
 PANDOC_ARGS = [
