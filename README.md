@@ -192,11 +192,11 @@ Without these settings citations will not be processed by the plugin.
 
 You may write your bibliography in any format supported by Pandoc with the appropriate extensions specified. However, you **must** name the bibliography file the same as your blog.
 
-For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failing to do so will mean that the references will not be picked up.
+For example, a blog with the file name `my-blog.md` should have a bibliography file called `my-blog.bib`, `my-blog.json`, `my-blog.yaml` or `my-blog.bibtex`in the same directory as your blog or in a subdirectory of the directory that your blog resides in. Failure to do so will mean that the references will not be picked up.
 
 #### Known Issues with Citations
 
-If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from Zotero. This file may be specified so:
+If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from [Zotero](https://www.zotero.org/). This file may be specified so:
 
 ```python
 PANDOC_ARGS = [
@@ -212,7 +212,7 @@ csl: "https://www.zotero.org/styles/ieee-with-url"
 
 Processing time increases when using a remote CSL file.
 
-To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from [Zotero](https://www.zotero.org/) which may be referenced as shown below:
+To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from Zotero. which may be referenced as shown below:
 
 ```yaml
 csl: "path/to/file/ieee-with-url.csl"
