@@ -18,7 +18,7 @@ To find out how to install Python please see [here](https://wiki.python.org/moin
 
 To install Pandoc follow these [installation instructions](https://pandoc.org/installing.html).
 
-[PyYAML](https://pypi.org/project/PyYAML/), Pelican and the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below
+Pelican, [PyYAML](https://pypi.org/project/PyYAML/) and the [Markdown Word Count](https://github.com/gandreadis/markdown-word-count) can be installed using [pip](https://pip.pypa.io/en/stable/installing/) as shown below:
 
 ```bash
 pip install pelican
@@ -30,7 +30,7 @@ The plugin should function correctly on newer versions of the above dependencies
 
 ## Installation
 
-To install the plugin execute the following command.
+To install the plugin execute the following command:
 
 ```bash
 python -m pip install pelican-pandoc-reader
@@ -64,9 +64,9 @@ date: "<date>"
 ...
 ```
 
-**Note: The plugin supports Pandoc's YAML syntax for specifying metadata. However, Pelican's format for metadata is different and may need to be rewritten if you stop using this plugin.**
+**Note: The plugin supports Pandoc's YAML syntax for specifying metadata which is different to Pelican's format for metadata. You may need to be rewrite the metadata in your files if you stop using this plugin.**
 
-YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string, such as when specifying tags for your blogs.
+YAML blocks that define more that one level such as YAML lists are not supported although they are supported by Pandoc. This is due to metadata processing limitations. In cases where you would normally add a YAML list use a comma separated string.
 
 More information on Pandoc's YAML metadata blocks are available [here](https://pandoc.org/MANUAL.html#metadata-blocks).
 
@@ -198,7 +198,7 @@ For example, a blog with the file name `my-blog.md` should have a bibliography f
 
 #### Known Issues with Citations
 
-If enabling citations with a specific style, you need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example, if you are using ieee-with-url style file it may be specified so:
+If enabling citations with a specific style, you may need to specify a CSL (Citation Style Language) file, available from the [Zotero Style Repository](https://www.zotero.org/styles). For example, if you are using `ieee-with-url` style file it may be specified in `pelicanconf.py` as shown:
 
 ```python
 PANDOC_ARGS = [
@@ -206,15 +206,23 @@ PANDOC_ARGS = [
 ]
 ```
 
-or
+Or in a Pandoc default file like so:
 
 ```yaml
 csl: "https://www.zotero.org/styles/ieee-with-url"
 ```
 
-Processing time increases when using a remote CSL file.
+Specifying a remote CSL file as shown dramatically increases the time taken to process the content files.
 
-To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from Zotero. which may be referenced as shown below:
+To improve processing speed it is highly recommended that you use a local copy of the CSL file downloaded from Zotero. Which may be referenced in `pelicanconf.py` as shown below:
+
+```python
+PANDOC_ARGS = [
+   '--csl=path/to/file/ieee-with-url.csl'
+]
+```
+
+Or in a Pandoc default file like so:
 
 ```yaml
 csl: "path/to/file/ieee-with-url.csl"
